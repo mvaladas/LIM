@@ -10,7 +10,7 @@ Still in heavy development.
 - [esp-rgb-led-matrix](https://github.com/BlueAndi/esp-rgb-led-matrix)
 
 # Fixing Linking Errors with AsyncHTTPRequest_Generic
-- See (Here)[https://github.com/khoih-prog/AsyncHTTPRequest_Generic#howto-fix-multiple-definitions-linker-error]
+- See [Here](https://github.com/khoih-prog/AsyncHTTPRequest_Generic#howto-fix-multiple-definitions-linker-error)
 - mv src src_h
 - mv src_cpp src
 
