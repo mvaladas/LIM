@@ -30,6 +30,12 @@ TransitionEffect::~TransitionEffect()
 {
 }
 
+/**
+ * @brief Is the transition effect currently running?
+ * 
+ * @return true if the effect is running
+ * @return false if the effect has finished
+ */
 bool TransitionEffect::IsRunning()
 {
     return isRunning;

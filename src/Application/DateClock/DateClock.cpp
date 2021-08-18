@@ -1,14 +1,27 @@
+/**
+ * @file DateClock.cpp
+ * @author Miguel Valadas (mvaladas@users.noreply.github.com)
+ * @brief DateClock class definition
+ * @version 0.1
+ * @date 18-08-212021
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include "DateClock.h"
 #include "Application/Application.h"
 #include "utils.h"
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <TimeLib.h>
-#include <Fonts/Org_01.h>
-#include <Fonts/Picopixel.h>
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
 
+/**
+ * @brief Destroy the Date Clock:: Date Clock object
+ * 
+ */
 DateClock::~DateClock()
 {
   if (ntpUDP != nullptr)
@@ -21,6 +34,10 @@ DateClock::~DateClock()
   }
 }
 
+/**
+ * @brief Initialize the application
+ * 
+ */
 void DateClock::doBegin()
 {
   if (ntpUDP != nullptr)
@@ -35,17 +52,30 @@ void DateClock::doBegin()
   timeClient = new NTPClient(*ntpUDP, "europe.pool.ntp.org", 2 * 3600, 60000);
   timeClient->begin();
 }
+
+/**
+ * @brief Updates the current time
+ * 
+ */
 void DateClock::doUpdate()
 {
   timeClient->update();
 }
 
+/** 
+ * @brief draw all elements of the application on the matrix 
+ * 
+ * */
 void DateClock::draw()
 {
   this->drawCalendar();
   this->drawClock();
 }
 
+/**
+ * @brief draw the calendar on the matrix
+ * 
+ */
 void DateClock::drawCalendar()
 {
   int16_t x, y;
@@ -64,6 +94,10 @@ void DateClock::drawCalendar()
   matrix->print(daystr);
 }
 
+/**
+ * @brief draw the clock on the matrix
+ * 
+ */
 void DateClock::drawClock()
 {
   unsigned long rawTime = timeClient->getEpochTime();

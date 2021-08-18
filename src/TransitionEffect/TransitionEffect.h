@@ -25,7 +25,7 @@ enum TransitionDirection
 };
 
 /**
- * @brief Class defines a transition effect between two applications
+ * @brief Class defines a transition effect between two applications.
  */
 class TransitionEffect
 {

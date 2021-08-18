@@ -1,6 +1,7 @@
 /**
  * @file Application.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
+ * @brief Application class definition
  * @version 0.1
  * @date 16-08-212021
  * 
