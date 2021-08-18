@@ -54,7 +54,7 @@ protected:
 public:
 
     explicit Application(Adafruit_NeoMatrix *matrix);
-    ~Application();
+    virtual ~Application();
 
     void Update();
     void Begin();

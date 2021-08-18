@@ -9,10 +9,6 @@
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
 
-DateClock::DateClock(Adafruit_NeoMatrix *matrix) : Application(matrix)
-{
-}
-
 DateClock::~DateClock()
 {
   if (ntpUDP != nullptr)

@@ -21,8 +21,8 @@ private:
     virtual void draw();
 
 public:
-    DateClock(Adafruit_NeoMatrix* matrix);
-    ~DateClock();
+    using Application::Application;
+    virtual ~DateClock();
 };
 
 #endif 
