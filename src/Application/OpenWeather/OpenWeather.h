@@ -22,7 +22,7 @@ private:
     virtual void draw();
 
 public:
-    OpenWeather(Adafruit_NeoMatrix* matrix);
+    OpenWeather(FastLED_NeoMatrix* matrix);
     virtual ~OpenWeather();
 };
 

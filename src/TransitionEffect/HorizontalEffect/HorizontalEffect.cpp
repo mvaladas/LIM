@@ -12,7 +12,7 @@
 #include "TransitionEffect/TransitionEffect.h"
 #include "HorizontalEffect.h"
 #include "Application/Application.h"
-#include <Adafruit_NeoMatrix.h>
+#include <FastLED_NeoMatrix.h>
 
 HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : TransitionEffect(currentApp, nextApp, direction), maxSteps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
 {

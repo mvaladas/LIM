@@ -11,7 +11,7 @@
 
 #ifndef _H_APPLICATION
 #define _H_APPLICATION
-#include <Adafruit_NeoMatrix.h>
+#include <FastLED_NeoMatrix.h>
 
 /**
  * @brief Abstract class for any application.
@@ -39,7 +39,7 @@ protected:
     unsigned long updateInterval = 1000;
 
     /** Reference to the matrix that will draw the application */
-    Adafruit_NeoMatrix *matrix;
+    FastLED_NeoMatrix *matrix;
 
     /** Abstract function to execute the acutal application update operations on specific class*/
     virtual void doUpdate() = 0;
@@ -50,7 +50,7 @@ protected:
 
 public:
 
-    explicit Application(Adafruit_NeoMatrix *matrix);
+    explicit Application(FastLED_NeoMatrix *matrix);
     virtual ~Application();
 
     void Update();

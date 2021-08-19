@@ -13,7 +13,7 @@
 #define _H_DATECLOCK
 
 #include <stdint.h>
-#include <Adafruit_NeoMatrix.h>
+#include <FastLED_NeoMatrix.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include "Application/Application.h"

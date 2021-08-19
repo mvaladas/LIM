@@ -11,7 +11,7 @@
 
 #include "OpenWeather.h"
 
-OpenWeather::OpenWeather(Adafruit_NeoMatrix* matrix) : Application(matrix)
+OpenWeather::OpenWeather(FastLED_NeoMatrix* matrix) : Application(matrix)
 {
 }
 

@@ -12,7 +12,7 @@
 #define _H_TRANSITIONEFFECT
 
 #include "Application/Application.h"
-#include <Adafruit_NeoMatrix.h>
+#include <FastLED_NeoMatrix.h>
 
 /**
  * @brief Direction of the transition.

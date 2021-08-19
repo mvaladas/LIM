@@ -10,14 +10,14 @@
  */
 
 #include "Application.h"
-#include <Adafruit_NeoMatrix.h>
+#include <FastLED_NeoMatrix.h>
 
 /**
     * @brief Construct a new Application object
     * 
-    * @param matrix reference to an Adafruit_NeoMatrix
+    * @param matrix reference to an FastLED_NeoMatrix
     * */
-Application::Application(Adafruit_NeoMatrix *matrix) : matrix(matrix)
+Application::Application(FastLED_NeoMatrix *matrix) : matrix(matrix)
 {
 }
 
