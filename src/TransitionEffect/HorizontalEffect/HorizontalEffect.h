@@ -14,14 +14,21 @@
 
 #include "TransitionEffect/TransitionEffect.h"
 
+/**
+ * @brief Horizontal Transition Effect of Apps
+ * 
+ */
 class HorizontalEffect : public TransitionEffect
 {
 private:
+    /** Length of time in millis for the transition */
     static const unsigned long HORIZONTAL_EFFECT_LENGTH = 1000;
-
+    /** How long between each transition step */
     unsigned long transitionInterval = HORIZONTAL_EFFECT_LENGTH / 32;
+    /** Last time, in millis, the transition updated */
     unsigned long lastCycleMillis = 0;
-    uint8_t maxSteps;
+    /** Number of steps the transition lasts */
+    uint8_t steps;
 
 public:
     HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t steps);

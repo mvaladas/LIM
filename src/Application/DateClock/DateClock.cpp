@@ -90,7 +90,7 @@ void DateClock::drawCalendar()
   matrix->setFont(&Tiny3x3a2pt7b);
   matrix->setTextColor(matrix->Color(0, 0, 0));
   matrix->getTextBounds(daystr, 0, 5, &x, &y, &w, &h);
-  matrix->setCursor(this->offset_x + 4 - (floor(w / 2)), this->offset_y + 5);
+  matrix->setCursor(this->offset_x + 4 - (floor(w / 2)), 5 - this->offset_y);
   matrix->print(daystr);
 }
 
@@ -115,6 +115,6 @@ void DateClock::drawClock()
 
   // Hours
   //matrix->getTextBounds(clockStr, 0, 5, &x, &y, &w, &h);
-  matrix->setCursor(this->offset_x + 12, this->offset_y + 7);
+  matrix->setCursor(this->offset_x + 12, 7 - this->offset_y);
   matrix->print(clockStr);
 }

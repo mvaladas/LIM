@@ -37,7 +37,7 @@ private:
     /** Should apps cycle automatically? */
     bool enableAutoCycle = true;
     /** Default time, in milliseconds, and app should be displayed before the next one */
-    unsigned long autoCycleDuration = 10000;
+    unsigned long autoCycleDuration = 30000;
     /** Time of the last cycle */
     unsigned long lastCycleMillis = 0;
 

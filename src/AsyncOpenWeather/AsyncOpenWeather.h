@@ -15,26 +15,43 @@
 #include <Arduino.h>
 #include <AsyncHTTPRequest_Generic.h>
 
-struct WeatherData {
+/**
+ * @brief Structure that contains current weather data from OpenWeatherMap
+ * 
+ */
+struct WeatherData
+{
   String description;
   String weather;
-  float feels_like;
+  uint16_t id;
+  uint8_t feels_like;
 };
 
+/**
+ * @brief OpenWeatherMap Asynchronous Update class.
+ * Retrives weather data from OWM asyncronously by means of the AsyncHTTPRequest library.
+ * 
+ */
 class AsyncOpenWeather
 {
 private:
+  /** OpenWeatherMap API Key */
   String apiKey;
+  /** City to fetch data from */
   String city;
+  /** Internal container for the API call URL */
   String url;
+  /* Instance of AsyncHTTPRequest to handle asynchronous HTTP calls */
   AsyncHTTPRequest request;
 
+  /** Current weather data as updated from OWM */
   WeatherData currentWeather;
 
 public:
   AsyncOpenWeather(String apiKey, String city);
   ~AsyncOpenWeather();
 
+  WeatherData *getCurrentWeather();
   void Update();
 };
 

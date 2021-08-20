@@ -44,7 +44,7 @@ void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t bitmap[],
             // Serial.printf(" COLOR = 0x%X\n", color);
             
             this->drawPixel(x + i, y, Color24to16(color >> 8));
-            this->drawPixel(x + i + 8, y, color >> 8);
+            //this->drawPixel(x + i + 8, y, color >> 8);
         }
     }
     endWrite();

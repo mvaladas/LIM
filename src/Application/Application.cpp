@@ -10,14 +10,14 @@
  */
 
 #include "Application.h"
-#include <FastLED_NeoMatrix.h>
+#include <LimMatrix/LimMatrix.h>
 
 /**
     * @brief Construct a new Application object
     * 
-    * @param matrix reference to an FastLED_NeoMatrix
+    * @param matrix reference to an LimMatrix
     * */
-Application::Application(FastLED_NeoMatrix *matrix) : matrix(matrix)
+Application::Application(LimMatrix *matrix) : matrix(matrix)
 {
 }
 
@@ -59,7 +59,7 @@ void Application::addOffset(int8_t x, int8_t y)
 void Application::getOffset(int8_t* x, int8_t* y)
 {
     *x = offset_x;
-    *y = offset_x;
+    *y = offset_y;
 }
 
 /**

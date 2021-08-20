@@ -13,20 +13,30 @@
 #define _H_OPENWEATHER
 
 #include "Application/Application.h"
+#include "AsyncOpenWeather/AsyncOpenWeather.h"
+#include "LimMatrix/LimMatrix.h"
 
+/**
+ * @brief Open Weather Map Application.
+ * 
+ */
 class OpenWeather: public Application
 {
+
 private:
+    /** Reference to Async Open Weather instance */
+    AsyncOpenWeather* asyncOW;
+    
     virtual void doUpdate();
     virtual void doBegin();
     virtual void draw();
 
 public:
-    OpenWeather(FastLED_NeoMatrix* matrix);
+    OpenWeather(LimMatrix* matrix, String apiKey, String city);
     virtual ~OpenWeather();
+
+    virtual void drawBitmap();
 };
-
-
 
 
 #endif

@@ -12,7 +12,7 @@
 #define _H_TRANSITIONEFFECT
 
 #include "Application/Application.h"
-#include <FastLED_NeoMatrix.h>
+#include <LimMatrix/LimMatrix.h>
 
 /**
  * @brief Direction of the transition.

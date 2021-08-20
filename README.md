@@ -19,3 +19,6 @@ If a Constants.h file is present, constants will be loaded from there, otherwise
 
 # Aknowledgements and attributions
 TomThub modified font thanks to [AWTRIX](https://github.com/awtrix/AWTRIX2.0-Controller)
+
+Icons thanks to:
+- Justin Cyr: https://twitter.com/JUSTIN_CYR/status/658031097805197313

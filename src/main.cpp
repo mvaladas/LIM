@@ -11,26 +11,38 @@
 
 // Include Constants file if present, or load default values
 #if __has_include("Constants.h")
-  #include "Constants.h"
+#include "Constants.h"
 #else
-  #define LED_PIN 4 // Which pin is attached to the NeoPixels
-  #define WIFI_HOSTNAME "LIM-Hotspot" // Hotspot name for WifiManager
-  #define OWM_APIKEY "DEADBEEF" // OSM API Key 
+#define LED_PIN 4                   // Which pin is attached to the NeoPixels
+#define WIFI_HOSTNAME "LIM-Hotspot" // Hotspot name for WifiManager
+#define OWM_APIKEY "DEADBEEF"       // OSM API Key
 #endif
+
+//#define FASTLED_INTERRUPT_RETRY_COUNT 1
+#define FASTLED_ALLOW_INTERRUPTS 0
+
 #include "Utils.h"
 
-#include <Adafruit_NeoMatrix.h>
+#include <LimMatrix/LimMatrix.h>
 #include <WiFiManager.h>
 
 #include "Application/DateClock/DateClock.h"
+#include "Application/OpenWeather/OpenWeather.h"
 #include "LimManager.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 
 // Globals
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(32, 8, LED_PIN,
-                                               NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
-                                                   NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
-                                               NEO_GRB + NEO_KHZ800);
+// LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
+//                                                NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+//                                                    NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+//                                                NEO_GRB + NEO_KHZ800);
+
+CRGB matrixleds[32 * 8];
+
+LimMatrix matrix = LimMatrix(matrixleds, 32, 8, 1, 1,
+                             NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+                                 NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG);
+
 WiFiManager wifiManager;
 LimManager limManager;
 
@@ -41,8 +53,11 @@ LimManager limManager;
 void createApps()
 {
   // These never get deleted because there is no shutdown in the microprocessor.
-  DateClock* clock = new DateClock(&matrix);
+  DateClock *clock = new DateClock(&matrix);
+  OpenWeather *owmApp = new OpenWeather(&matrix, OWM_APIKEY, " Darmstadt, DE");
+
   limManager.AddApplication(clock);
+  limManager.AddApplication(owmApp);
 }
 
 /**
@@ -51,10 +66,14 @@ void createApps()
  */
 void setup()
 {
+
   // Initialize Serial
-  Serial.begin(9600);
+  //Serial.begin(9600);
+  //Serial.println(EspClass::getSdkVersion());
 
   // Initialize Matrix
+  FastLED.addLeds<NEOPIXEL, LED_PIN>(matrixleds, 32 * 8);
+
   matrix.begin();
   matrix.setBrightness(255 * 0.25);
   matrix.clear();

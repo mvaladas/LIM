@@ -12,9 +12,17 @@
 #include "TransitionEffect/TransitionEffect.h"
 #include "HorizontalEffect.h"
 #include "Application/Application.h"
-#include <FastLED_NeoMatrix.h>
+#include <LimMatrix/LimMatrix.h>
 
-HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : TransitionEffect(currentApp, nextApp, direction), maxSteps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
+/**
+ * @brief Construct a new Horizontal Effect:: Horizontal Effect object
+ * 
+ * @param currentApp Reference to the currently displayed APP
+ * @param nextApp Reference to the next app to display
+ * @param direction Direction of the transition
+ * @param width Width of the transition
+ */
+HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : TransitionEffect(currentApp, nextApp, direction), steps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
 {
 }
 
@@ -28,11 +36,11 @@ void HorizontalEffect::Begin()
     {
     case TRANSITION_FORWARD:
         currentApp->setOffset(0, 0);
-        nextApp->setOffset(31, 0);
+        nextApp->setOffset(steps - 1, 0);
         break;
     case TRANSITION_BACKWARDS:
         currentApp->setOffset(0, 0);
-        nextApp->setOffset(-31, 0);
+        nextApp->setOffset(-steps + 1, 0);
         break;
     default:
         break;
@@ -43,7 +51,8 @@ void HorizontalEffect::Begin()
 /** * @brief Updates the transition effect by drawing whatever is needed. */
 void HorizontalEffect::Update()
 {
-    unsigned long interval = millis() - lastCycleMillis;
+    unsigned long currentTime = millis();
+    unsigned long interval = currentTime - lastCycleMillis;
     int modifier = (this->direction == TRANSITION_FORWARD) ? -1 : 1;
 
     // Update App position
@@ -53,12 +62,12 @@ void HorizontalEffect::Update()
         nextApp->addOffset(modifier, 0);
         int8_t x, y;
         nextApp->getOffset(&x, &y);
-        if (y == 0)
+        if (x == 0)
         {
             // The Effect has ended
             this->isRunning = false;
         }
-        lastCycleMillis = millis();
+        lastCycleMillis = currentTime;
     }
     // Always draw both apps
     currentApp->Update();

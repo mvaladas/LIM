@@ -1,7 +1,25 @@
+/**
+ * @file AsyncOpenWeather.cpp
+ * @author Miguel Valadas (mvaladas@users.noreply.github.com)
+ * @brief Definition of  AsyncOpenWeather
+ * @version 0.1
+ * @date 20-08-212021
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include "AsyncOpenWeather.h"
 #include <AsyncHTTPRequest_Generic.h>
 #include <ArduinoJson.h>
+#include <math.h>
 
+/**
+ * @brief Callback from AsynHTTPRequest once the HTTP call has been handled.
+ * 
+ * @param optParm Pointer to the current weather structure
+ * @param request AsyncHTTPRequest reference
+ * @param readyState Ready State
+ */
 void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState)
 {
     auto currentWeather = (WeatherData *)optParm;
@@ -11,41 +29,37 @@ void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState
 
     if (readyState == readyStateDone)
     {
-        //     Serial.println("\n**************************************");
-        //     Serial.println(request->responseText());
-        //     Serial.println("**************************************");
+        // Serial.println("\n**************************************");
+        // Serial.println(request->responseText());
+        // Serial.println("**************************************");
 
-        //     request->setDebug(false);
-        // }
+        // request->setDebug(false);
 
         DynamicJsonDocument doc(capacity);
         deserializeJson(doc, request->responseText());
-
         currentWeather->description = doc["weather"][0]["description"].as<String>();
-        currentWeather->weather = doc["weather"][0]["main"].as<String>();
-        currentWeather->feels_like = doc["main"]["feels_like"].as<float>();
-        // w->id = doc["list"][1]["weather"]["id"].as<int>();
-        // w->current_Temp = doc["list"][1]["main"]["temp"].as<float>();
-        // w->min_temp = doc["list"][1]["main"]["temp_min"].as<float>();
-        // w->max_temp = doc["list"][1]["main"]["temp_max"].as<float>();
-        // w->humidity = doc["list"][1]["main"]["temp_max"].as<float>();
-        // if (w->id < 700)
-        //     w->rain = doc["list"][1]["rain"]["3h"].as<float>();
-        // else
-        //     w->rain = 0;
+        //currentWeather->weather = doc["weather"][0]["main"].as<String>();
+        currentWeather->id = doc["weather"][0]["id"].as<double>();
+        currentWeather->feels_like = roundf(doc["main"]["temp"].as<float>());
     }
 }
 
+/**
+ * @brief Construct a new Async Open Weather:: Async Open Weather object
+ * 
+ * @param apiKey OpenWeatherMap API Key
+ * @param city City to fetch weather of
+ */
 AsyncOpenWeather::AsyncOpenWeather(String apiKey, String city) : apiKey(apiKey), city(city)
 {
     request.onReadyStateChange(readyStateChangeCB, &this->currentWeather);
     url = "/data/2.5/weather?q=" + city + "&appid=" + apiKey + "&units=metric";
 }
 
-AsyncOpenWeather::~AsyncOpenWeather()
-{
-}
-
+/**
+ * @brief Updates the current weather data by using the OpenWeatherMap API
+ * 
+ */
 void AsyncOpenWeather::Update()
 {
     static bool requestOpenResult;
@@ -70,4 +84,14 @@ void AsyncOpenWeather::Update()
     {
         Serial.println("Can't send request");
     }
+}
+
+/**
+ * @brief Returns a reference to the current weather data
+ * 
+ * @return WeatherData* current weather
+ */
+WeatherData *AsyncOpenWeather::getCurrentWeather()
+{
+    return &currentWeather;
 }
