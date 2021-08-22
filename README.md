@@ -17,6 +17,10 @@ Still in heavy development.
 # Constants.h
 If a Constants.h file is present, constants will be loaded from there, otherwise defaults will be loaded that might not work with some applications (e.g. API Keys constants.) See main.cpp.
 
+# Neopixels or FastLED
+Right now FastLED has an issue where the first LED will now behave correctly, see [here](https://github.com/FastLED/FastLED/issues/1260).
+For this reason, a configuratio for Neopixels exists.
+
 # Aknowledgements and attributions
 TomThub modified font thanks to [AWTRIX](https://github.com/awtrix/AWTRIX2.0-Controller)
 

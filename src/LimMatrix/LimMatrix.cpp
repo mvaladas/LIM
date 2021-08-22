@@ -10,6 +10,7 @@
  */
 
 #include "LimMatrix.h"
+#include "Utils.h"
 
 /**************************************************************************/
 /*!
@@ -32,7 +33,7 @@ void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t *bitmap,
         {
             uint32_t word = pgm_read_dword(&bitmap[j * w + i]);
 
-            this->drawPixel(x + i, y, Color24to16(word));
+            this->drawPixel(x + i, y, Utils::RGBto565(word));
             //this->drawPixel(x + i, y, word);
         }
     }

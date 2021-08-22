@@ -18,9 +18,6 @@
 #define OWM_APIKEY "DEADBEEF"       // OSM API Key
 #endif
 
-//#define FASTLED_INTERRUPT_RETRY_COUNT 2
-#define FASTLED_ALLOW_INTERRUPTS 0
-
 #include "Utils.h"
 
 #include <LimMatrix/LimMatrix.h>
@@ -31,17 +28,23 @@
 #include "LimManager.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 
-// Globals
-// LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
-//                                                NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
-//                                                    NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
-//                                                NEO_GRB + NEO_KHZ800);
+#ifdef LIM_FASTLED
+
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
+#define FASTLED_ALLOW_INTERRUPTS 0
 
 CRGB matrixleds[32 * 8];
-
 LimMatrix matrix = LimMatrix(matrixleds, 32, 8, 1, 1,
                              NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
                                  NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG);
+#elif LIM_NEOPIXELS
+LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
+                             NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+                                 NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+                             NEO_GRB + NEO_KHZ800);
+#endif
+
+// Globals
 
 WiFiManager wifiManager;
 LimManager limManager;
@@ -68,11 +71,13 @@ void setup()
 {
 
   // Initialize Serial
-  Serial.begin(9600);
+  //Serial.begin(9600);
   //Serial.println(EspClass::getSdkVersion());
 
   // Initialize Matrix
+  #ifdef LIM_FASTLED
   FastLED.addLeds<NEOPIXEL, LED_PIN>(matrixleds, 32 * 8);
+  #endif
 
   matrix.begin();
   matrix.setBrightness(255 * 0.25);
