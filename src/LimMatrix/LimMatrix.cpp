@@ -22,8 +22,8 @@
     @param    h   Height of bitmap in pixels
 */
 /**************************************************************************/
-void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t bitmap[],
-                              int16_t w, int16_t h)
+void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t *bitmap,
+                                int16_t w, int16_t h)
 {
     startWrite();
     for (int16_t j = 0; j < h; j++, y++)
@@ -31,21 +31,28 @@ void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t bitmap[],
         for (int16_t i = 0; i < w; i++)
         {
             uint32_t word = pgm_read_dword(&bitmap[j * w + i]);
-            uint32_t color = (word & 0xFF000000) >> 24;
-            color |= (word & 0x000000FF) << 24; // REd
-            color |= (word & 0x0000FF00) << 8; // Green
-            color |= (word & 0x00FF0000) >> 8; // bLue
-            
-            // Serial.print("X = ");
-            // Serial.print(x + 1);
-            // Serial.print(" Y = ");
-            // Serial.print(y);
-            // Serial.printf(" WORD = 0x%X\n", word);
-            // Serial.printf(" COLOR = 0x%X\n", color);
-            
-            this->drawPixel(x + i, y, Color24to16(color >> 8));
-            //this->drawPixel(x + i + 8, y, color >> 8);
+
+            this->drawPixel(x + i, y, Color24to16(word));
+            //this->drawPixel(x + i, y, word);
         }
     }
     endWrite();
+}
+
+/**
+ * @brief Draw an animated sprite. Frame animation calculated automatically based on millis()
+ * 
+ * @param progmem_data PROGMEM pointer to data
+ * @param fps FPS of sprite animation
+ * @param frame_count Frame count of sprite
+ * @param offsetX X offset to display sprite
+ * @param offsetY y offset to display sprite
+ * @param width spirte width
+ * @param height sprite height
+ */
+void LimMatrix::drawSprite(const uint32_t *progmem_data, uint16_t fps, uint16_t frame_count,
+                           uint16_t offsetX, uint16_t offsetY, uint16_t width, uint16_t height)
+{
+    uint16_t currentFrameIdx = (int16_t)(millis() * fps / 1000.0) % frame_count;
+    this->drawRGB24Bitmap(offsetX, offsetY, progmem_data + currentFrameIdx * width * height, width, height);
 }

@@ -35,7 +35,7 @@ public:
     OpenWeather(LimMatrix* matrix, String apiKey, String city);
     virtual ~OpenWeather();
 
-    virtual void drawBitmap();
+    virtual void drawSprite();
 };
 
 

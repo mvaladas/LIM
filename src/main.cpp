@@ -18,7 +18,7 @@
 #define OWM_APIKEY "DEADBEEF"       // OSM API Key
 #endif
 
-//#define FASTLED_INTERRUPT_RETRY_COUNT 1
+//#define FASTLED_INTERRUPT_RETRY_COUNT 2
 #define FASTLED_ALLOW_INTERRUPTS 0
 
 #include "Utils.h"
@@ -68,7 +68,7 @@ void setup()
 {
 
   // Initialize Serial
-  //Serial.begin(9600);
+  Serial.begin(9600);
   //Serial.println(EspClass::getSdkVersion());
 
   // Initialize Matrix

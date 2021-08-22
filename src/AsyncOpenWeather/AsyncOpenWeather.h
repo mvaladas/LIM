@@ -49,7 +49,6 @@ private:
 
 public:
   AsyncOpenWeather(String apiKey, String city);
-  ~AsyncOpenWeather();
 
   WeatherData *getCurrentWeather();
   void Update();

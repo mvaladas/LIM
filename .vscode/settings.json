@@ -8,6 +8,10 @@
         "vector": "cpp",
         "system_error": "cpp",
         "cstddef": "cpp",
-        "pgmspace.h": "c"
+        "pgmspace.h": "c",
+        "array": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp",
+        "cmath": "cpp"
     }
 }

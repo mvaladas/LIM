@@ -24,9 +24,12 @@ class LimMatrix : public FastLED_NeoMatrix
 public:
     //Inherith constructors
     using FastLED_NeoMatrix::FastLED_NeoMatrix;
-    void drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t bitmap[],
-                  int16_t w, int16_t h);
 
+    void drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t bitmap[],
+                         int16_t w, int16_t h);
+
+    void drawSprite(const uint32_t *progmem_data, uint16_t fps, uint16_t frame_count,
+                    uint16_t offsetX, uint16_t offsetY, uint16_t width, uint16_t height);
 };
 
 #endif
