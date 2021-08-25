@@ -1,42 +1,34 @@
 /**
- * @file OpenWeather.h
+ * @file OWMMinMaxTemp.h
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
- * @brief 
+ * @brief Declaration of OWMMinMaxTemp class
  * @version 0.1
- * @date 17-08-212021
+ * @date 23-08-212021
  * 
  * @copyright Copyright (c) 2021
  * 
  */
 
-#ifndef _H_OPENWEATHER
-#define _H_OPENWEATHER
+#ifndef _H_OWMMINMAXTEMP
+#define _H_OWMMINMAXTEMP
 
 #include "Application/Application.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 #include "LimMatrix/LimMatrix.h"
 
-/**
- * @brief Open Weather Map Application.
- * 
- */
-class OpenWeather: public Application
+class OWMMinMaxTemp : public Application
 {
-
 private:
     /** Reference to Async Open Weather instance */
-    AsyncOpenWeather* asyncOW;
-    
+    AsyncOpenWeather *asyncOW;
+
     virtual void doUpdate();
     virtual void doBegin();
     virtual void draw();
+    virtual void drawSprite();
 
 public:
-    OpenWeather(LimMatrix* matrix, String apiKey, String city);
-    virtual ~OpenWeather();
-
-    virtual void drawSprite();
+    OWMMinMaxTemp(AsyncOpenWeather *asyncOW, LimMatrix *matrix);
 };
-
 
 #endif

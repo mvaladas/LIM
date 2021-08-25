@@ -54,6 +54,12 @@ void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t *bitmap,
 void LimMatrix::drawSprite(const uint32_t *progmem_data, uint16_t fps, uint16_t frame_count,
                            uint16_t offsetX, uint16_t offsetY, uint16_t width, uint16_t height)
 {
-    uint16_t currentFrameIdx = (int16_t)(millis() * fps / 1000.0) % frame_count;
+    unsigned long currentMillis = millis();
+    uint16_t currentFrameIdx = (unsigned long)(currentMillis * fps / 1000.0) % frame_count;
+    if(currentFrameIdx >= frame_count)
+    {
+        Serial.printf("ERROR At millis: %lu\n", currentMillis);
+        Serial.printf("CurrentIdx = %i, and frame count is %i\n", currentFrameIdx, frame_count);
+    }
     this->drawRGB24Bitmap(offsetX, offsetY, progmem_data + currentFrameIdx * width * height, width, height);
 }

@@ -22,7 +22,8 @@
  * @param direction Direction of the transition
  * @param width Width of the transition
  */
-HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : TransitionEffect(currentApp, nextApp, direction), steps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
+HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : 
+TransitionEffect(currentApp, nextApp, direction), steps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
 {
 }
 
@@ -36,11 +37,11 @@ void HorizontalEffect::Begin()
     {
     case TRANSITION_FORWARD:
         currentApp->setOffset(0, 0);
-        nextApp->setOffset(steps - 1, 0);
+        nextApp->setOffset(steps + 1, 0);
         break;
     case TRANSITION_BACKWARDS:
         currentApp->setOffset(0, 0);
-        nextApp->setOffset(-steps + 1, 0);
+        nextApp->setOffset(-steps - 1, 0);
         break;
     default:
         break;

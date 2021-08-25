@@ -1,5 +1,5 @@
 /**
- * @file OpenWeather.cpp
+ * @file OWMCurrentTemp.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
  * @brief 
  * @version 0.1
@@ -9,7 +9,7 @@
  * 
  */
 
-#include "OpenWeather.h"
+#include "OWMCurrentTemp.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 #include "Fonts/TomThumbMod.h"
 
@@ -25,33 +25,20 @@
 /**
  * @brief Construct a new Open Weather:: Open Weather object
  * 
+ * @param asyncOw reference to an AsyncOpenWeather instance
  * @param matrix Drawing matrix where to draw the app
  * @param apiKey OpenWeather Map API Key
  * @param city City to fetch weather data
  */
-OpenWeather::OpenWeather(LimMatrix *matrix, String apiKey, String city) : Application(matrix)
+OWMCurrentTemp::OWMCurrentTemp(AsyncOpenWeather* asyncOW, LimMatrix *matrix) : Application(matrix), asyncOW(asyncOW)
 {
-    // There is only need to update the weather once every 5 minutes.
-    // TODO: Make configurable
-    this->updateInterval = 5 * 60 * 1000;
-    this->asyncOW = new AsyncOpenWeather(apiKey, city);
-}
-
-/**
- * @brief Destroy the Open Weather:: Open Weather object
- * 
- */
-OpenWeather::~OpenWeather()
-{
-    if (this->asyncOW != nullptr)
-        delete this->asyncOW;
 }
 
 /**
  * @brief Updates the weather data.
  * 
  */
-void OpenWeather::doUpdate()
+void OWMCurrentTemp::doUpdate()
 {
     this->asyncOW->Update();
 }
@@ -60,7 +47,7 @@ void OpenWeather::doUpdate()
  * @brief Initialize the App
  * 
  */
-void OpenWeather::doBegin()
+void OWMCurrentTemp::doBegin()
 {
     // Update once at startup.
     this->doUpdate();
@@ -70,7 +57,7 @@ void OpenWeather::doBegin()
  * @brief Draw the weather icon on the matrix
  * 
  */
-void OpenWeather::drawSprite()
+void OWMCurrentTemp::drawSprite()
 {
 
     uint16_t currentid = asyncOW->getCurrentWeather()->id;
@@ -108,7 +95,7 @@ void OpenWeather::drawSprite()
  * @brief Draw the Application on the matrix
  * 
  */
-void OpenWeather::draw()
+void OWMCurrentTemp::draw()
 {
 
     // Find the center of the text and draw it
@@ -118,7 +105,7 @@ void OpenWeather::draw()
     matrix->setTextColor(matrix->Color(255, 255, 255));
     int16_t x, y;
     uint16_t w, h;
-    String str(this->asyncOW->getCurrentWeather()->feels_like);
+    String str(this->asyncOW->getCurrentWeather()->temp);
     matrix->getTextBounds(str, this->offset_x + 10, this->offset_y + 7, &x, &y, &w, &h);
     //TODO: investigate why getTextBounds is returning one more character in bounds.
     // That's why we subtract 4 to the width.

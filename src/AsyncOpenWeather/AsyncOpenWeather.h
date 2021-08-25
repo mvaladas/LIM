@@ -16,6 +16,15 @@
 #include <AsyncHTTPRequest_Generic.h>
 
 /**
+ * @brief Type of update response received
+ * 
+ */
+enum OWMUpdateType {
+  OWM_CURRENT,
+  OWM_FORECAST
+};
+
+/**
  * @brief Structure that contains current weather data from OpenWeatherMap
  * 
  */
@@ -24,7 +33,20 @@ struct WeatherData
   String description;
   String weather;
   uint16_t id;
-  uint8_t feels_like;
+  int8_t feels_like;
+  int8_t temp;
+  int8_t temp_min;
+  int8_t temp_max;
+};
+
+/**
+ * @brief Structure that contains weather data for the daily forecast
+ * 
+ */
+struct Forecast
+{
+  int8_t temp_min;
+  int8_t temp_max;
 };
 
 /**
@@ -44,14 +66,27 @@ private:
   /* Instance of AsyncHTTPRequest to handle asynchronous HTTP calls */
   AsyncHTTPRequest request;
 
+  /** How long between querying the OWM API */
+  unsigned long updateInterval = 5 * 60 * 1000;
+  /** Last Update Time */
+  unsigned long lastUpdateTime = 0;
+
   /** Current weather data as updated from OWM */
   WeatherData currentWeather;
+
+  /** Forcast weather data as updated from OWM */
+  Forecast forecast;
+
+  OWMUpdateType currentUpdate = OWM_CURRENT;
 
 public:
   AsyncOpenWeather(String apiKey, String city);
 
   WeatherData *getCurrentWeather();
+  Forecast *getCurrentForecast();
+  OWMUpdateType getCurrentUpdate();
   void Update();
+  void UpdateForeCast();
 };
 
 #endif

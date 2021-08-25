@@ -22,25 +22,43 @@
  */
 void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState)
 {
-    auto currentWeather = (WeatherData *)optParm;
+    AsyncOpenWeather *asyncObj = (AsyncOpenWeather *)optParm;
 
     // TODO recalculate this
     const size_t capacity = 2 * JSON_ARRAY_SIZE(1) + JSON_ARRAY_SIZE(2) + 6 * JSON_OBJECT_SIZE(1) + 3 * JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(4) + JSON_OBJECT_SIZE(5) + 5 * JSON_OBJECT_SIZE(8) + 570;
 
     if (readyState == readyStateDone)
     {
+        String response = request->responseText();
         // Serial.println("\n**************************************");
-        // Serial.println(request->responseText());
+        // Serial.println(response);
         // Serial.println("**************************************");
 
         // request->setDebug(false);
-
         DynamicJsonDocument doc(capacity);
-        deserializeJson(doc, request->responseText());
-        currentWeather->description = doc["weather"][0]["description"].as<String>();
-        //currentWeather->weather = doc["weather"][0]["main"].as<String>();
-        currentWeather->id = doc["weather"][0]["id"].as<double>();
-        currentWeather->feels_like = roundf(doc["main"]["temp"].as<float>());
+        DeserializationError err = deserializeJson(doc, response);
+        if (err == DeserializationError::Ok)
+        {
+            if (asyncObj->getCurrentUpdate() == OWM_CURRENT)
+            {
+                WeatherData *data = asyncObj->getCurrentWeather();
+                data->description = doc["weather"][0]["description"].as<String>();
+                // currentWeather->weather = doc["weather"][0]["main"].as<String>();
+                data->id = doc["weather"][0]["id"].as<double>();
+                data->temp = roundf(doc["main"]["temp"].as<float>());
+                data->temp_min = roundf(doc["main"]["temp_min"].as<float>());
+                data->temp_max = roundf(doc["main"]["temp_max"].as<float>());
+
+                // Do the second request after this one:
+                asyncObj->UpdateForeCast();
+            }
+            else if (asyncObj->getCurrentUpdate() == OWM_FORECAST)
+            {
+                Forecast *data = asyncObj->getCurrentForecast();
+                data->temp_min = roundf(doc["list"][0]["temp"]["min"].as<float>());
+                data->temp_max = roundf(doc["list"][0]["temp"]["max"].as<float>());
+            }
+        }
     }
 }
 
@@ -52,7 +70,7 @@ void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState
  */
 AsyncOpenWeather::AsyncOpenWeather(String apiKey, String city) : apiKey(apiKey), city(city)
 {
-    request.onReadyStateChange(readyStateChangeCB, &this->currentWeather);
+    request.onReadyStateChange(readyStateChangeCB, this);
     url = "/data/2.5/weather?q=" + city + "&appid=" + apiKey + "&units=metric";
 }
 
@@ -63,27 +81,61 @@ AsyncOpenWeather::AsyncOpenWeather(String apiKey, String city) : apiKey(apiKey),
 void AsyncOpenWeather::Update()
 {
     static bool requestOpenResult;
-
-    if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
+    unsigned long currentMillis = millis();
+    if (lastUpdateTime == 0 || currentMillis - lastUpdateTime > updateInterval)
     {
-        String fullUrl = String("http://api.openweathermap.org/" + url).c_str();
-        Serial.println(fullUrl);
-        requestOpenResult = request.open("GET", fullUrl.c_str());
-
-        if (requestOpenResult)
+        if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
         {
-            // Only send() if open() returns true, or crash
-            request.send();
+            String fullUrl = String("http://api.openweathermap.org/" + url).c_str();
+            Serial.println(fullUrl);
+            requestOpenResult = request.open("GET", fullUrl.c_str());
+
+            if (requestOpenResult)
+            {
+                this->currentUpdate = OWM_CURRENT;
+                // Only send() if open() returns true, or crash
+                request.send();
+            }
+            else
+            {
+                Serial.println("Can't send bad request");
+            }
         }
         else
         {
-            Serial.println("Can't send bad request");
+            Serial.println("Can't send request");
         }
+        lastUpdateTime = currentMillis;
     }
-    else
-    {
-        Serial.println("Can't send request");
-    }
+}
+
+void AsyncOpenWeather::UpdateForeCast()
+{
+    static bool requestOpenResult;
+    unsigned long currentMillis = millis();
+        if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
+        {
+            String fullUrl = String("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + "&cnt=1&appid=" + apiKey + "&units=metric")
+                                 .c_str();
+            Serial.println(fullUrl);
+            requestOpenResult = request.open("GET", fullUrl.c_str());
+
+            if (requestOpenResult)
+            {
+                this->currentUpdate = OWM_FORECAST;
+                // Only send() if open() returns true, or crash
+                request.send();
+            }
+            else
+            {
+                Serial.println("Can't send bad request");
+            }
+        }
+        else
+        {
+            Serial.println("Can't send request");
+        }
+        lastUpdateTime = currentMillis;
 }
 
 /**
@@ -94,4 +146,19 @@ void AsyncOpenWeather::Update()
 WeatherData *AsyncOpenWeather::getCurrentWeather()
 {
     return &currentWeather;
+}
+
+/**
+ * @brief Returns a reference to the current forecast data
+ * 
+ * @return Forecast* current forecast
+ */
+Forecast *AsyncOpenWeather::getCurrentForecast()
+{
+    return &forecast;
+}
+
+OWMUpdateType AsyncOpenWeather::getCurrentUpdate()
+{
+    return this->currentUpdate;
 }

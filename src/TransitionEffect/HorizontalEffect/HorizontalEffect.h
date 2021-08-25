@@ -32,8 +32,8 @@ private:
 
 public:
     HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t steps);
-    void Update();
-    void Begin();
+    void Update() override;
+    void Begin() override;
 };
 
 #endif

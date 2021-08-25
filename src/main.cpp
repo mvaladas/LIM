@@ -24,7 +24,9 @@
 #include <WiFiManager.h>
 
 #include "Application/DateClock/DateClock.h"
-#include "Application/OpenWeather/OpenWeather.h"
+#include "Application/OpenWeather/OWMCurrentTemp.h"
+#include "Application/OpenWeather/OWMMinMaxTemp.h"
+#include "Application/Matrix/MatrixApp.h"
 #include "LimManager.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 
@@ -57,10 +59,16 @@ void createApps()
 {
   // These never get deleted because there is no shutdown in the microprocessor.
   DateClock *clock = new DateClock(&matrix);
-  OpenWeather *owmApp = new OpenWeather(&matrix, OWM_APIKEY, " Darmstadt, DE");
+
+  AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
+  OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
+  OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
+  MatrixApp *matrixapp = new MatrixApp(&matrix);
 
   limManager.AddApplication(clock);
-  limManager.AddApplication(owmApp);
+  limManager.AddApplication(owmTemp);
+  limManager.AddApplication(owmMinMax);
+  limManager.AddApplication(matrixapp);
 }
 
 /**
@@ -72,12 +80,12 @@ void setup()
 
   // Initialize Serial
   //Serial.begin(9600);
-  //Serial.println(EspClass::getSdkVersion());
+//Serial.println(EspClass::getSdkVersion());
 
-  // Initialize Matrix
-  #ifdef LIM_FASTLED
+// Initialize Matrix
+#ifdef LIM_FASTLED
   FastLED.addLeds<NEOPIXEL, LED_PIN>(matrixleds, 32 * 8);
-  #endif
+#endif
 
   matrix.begin();
   matrix.setBrightness(255 * 0.25);
