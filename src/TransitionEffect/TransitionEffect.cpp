@@ -17,16 +17,8 @@
  * @param nextApp Application to transition
  * @param direction direction of transition
  */
-TransitionEffect::TransitionEffect(Application *currentApp, Application *nextApp, TransitionDirection direction)
-: currentApp(currentApp), nextApp(nextApp), direction(direction), isRunning(false)
-{
-}
-
-/**
- * @brief Destroy the Transition Effect:: Transition Effect object
- * 
- */
-TransitionEffect::~TransitionEffect()
+TransitionEffect::TransitionEffect(TransitionDirection direction)
+: direction(direction), isRunning(false)
 {
 }
 
@@ -39,4 +31,10 @@ TransitionEffect::~TransitionEffect()
 bool TransitionEffect::IsRunning()
 {
     return isRunning;
+}
+
+void TransitionEffect::setApps(Application* currentApp, Application* nextApp)
+{
+    this->currentApp = currentApp;
+    this->nextApp = nextApp;
 }

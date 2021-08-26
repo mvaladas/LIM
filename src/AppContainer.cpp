@@ -1,5 +1,5 @@
 /**
- * @file LimManager.cpp
+ * @file AppContainer.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
  * @brief 
  * @version 0.1
@@ -9,16 +9,19 @@
  * 
  */
 
-#include "LimManager.h"
+#include "AppContainer.h"
 #include "Application/Application.h"
-#include "TransitionEffect/HorizontalEffect/HorizontalEffect.h"
+#include "TransitionEffect/TransitionEffect.h"
+#include "TransitionEffect/HorizontalEffect.h"
 
 /**
  * @brief Construct a new Lim Manager:: Lim Manager object
  * 
  */
-LimManager::LimManager()
+AppContainer::AppContainer()
 {
+    // Setup a default transition effect
+    this->currentEffect = new HorizontalEffect();
 }
 
 /**
@@ -26,7 +29,7 @@ LimManager::LimManager()
  * 
  * @param app reference to the application
  */
-void LimManager::AddApplication(Application *app)
+void AppContainer::AddApplication(Application *app)
 {
     apps.push_back(app);
 }
@@ -35,7 +38,7 @@ void LimManager::AddApplication(Application *app)
  * @brief Initialize the LIM Manager. Calls all of the begin function of previously added apps.
  * 
  */
-void LimManager::Begin()
+void AppContainer::Begin()
 {
     for (auto &&app : apps)
     {
@@ -51,17 +54,14 @@ void LimManager::Begin()
  * or the update of the currently running transition effect. Will also trigger the application cycle if 
  * auto-cycle is enabled.
  */
-void LimManager::Update()
+void AppContainer::Update()
 {
-    // If there is an effect reference, we are cycling apps
-    if (this->currentEffect != nullptr)
+    if (this->currentEffect->IsRunning())
     {
         this->currentEffect->Update();
-        // Remove the effect if it's stopped running
+        // Switch current app if the effect has stopped
         if (!this->currentEffect->IsRunning())
         {
-            delete this->currentEffect;
-            this->currentEffect = nullptr;
             currentAppIdx = nextAppIdx;
         }
     }
@@ -73,7 +73,7 @@ void LimManager::Update()
     //If autocycle is enabled
     if (enableAutoCycle)
     {
-        if ((millis() - lastCycleMillis >= autoCycleDuration) && currentEffect == nullptr)
+        if ((millis() - lastCycleMillis >= autoCycleDuration) && !currentEffect->IsRunning())
         {
             AppTransition(TRANSITION_FORWARD);
             lastCycleMillis = millis();
@@ -87,7 +87,7 @@ void LimManager::Update()
  * @param direction direction of the next applicaton
  * @return uint8_t index of the next application
  */
-uint8_t LimManager::calculateCycleApp(TransitionDirection direction)
+uint8_t AppContainer::calculateCycleApp(TransitionDirection direction)
 {
     int modifier = 0;
     switch (direction)
@@ -120,7 +120,8 @@ uint8_t LimManager::calculateCycleApp(TransitionDirection direction)
  * 
  * @param direction direction of the transition
  */
-void LimManager::AppTransition(TransitionDirection direction)
+
+void AppContainer::AppTransition(TransitionDirection direction)
 {
     // Calculate the transition app. The app that's going to replace the current one
     nextAppIdx = calculateCycleApp(direction);
@@ -130,8 +131,54 @@ void LimManager::AppTransition(TransitionDirection direction)
     {
         return;
     }
-    // Create an effect instance
-    // TODO: make this function more generic once more effects have been implemented.
-    this->currentEffect = new HorizontalEffect(apps[currentAppIdx], apps[nextAppIdx], direction, 32);
+    this->currentEffect->setApps(this->apps[currentAppIdx], this->apps[nextAppIdx]);
     this->currentEffect->Begin();
+}
+
+void AppContainer::setEffect(TransitionEffect* effect)
+{
+    if (this->currentEffect != nullptr)
+    {
+        delete this->currentEffect;
+    }
+    this->currentEffect = effect;
+}
+
+void AppContainer::doUpdate() {}
+void AppContainer::doBegin() {}
+void AppContainer::draw() {}
+
+void AppContainer::setCycleDuration(unsigned long duration)
+{
+    this->autoCycleDuration = duration;
+}
+
+/**
+     * @brief Set the X,Y offset of the application. (0,0) being the top, left pixel.
+     * 
+     * @param x offset in X
+     * @param y offset in Y
+     */
+void AppContainer::setOffset(int8_t x, int8_t y)
+{
+    Application::setOffset(x,y);
+    for (auto &&app : apps)
+    {
+        app->setOffset(x, y);
+    }
+}
+
+/**
+     * @brief Adds the passed parameters to the X,Y offset of the application
+     * 
+     * @param x value to add to the X offset
+     * @param y value to add to the Y offset
+     */
+void AppContainer::addOffset(int8_t x, int8_t y)
+{
+    Application::addOffset(x,y);
+    for (auto &&app : apps)
+    {
+        app->addOffset(x, y);
+    }
 }

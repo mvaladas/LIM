@@ -1,5 +1,5 @@
 /**
- * @file LimManager.h
+ * @file AppContainer.h
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
  * @brief 
  * @version 0.1
@@ -14,13 +14,14 @@
 
 #include "Application/Application.h"
 #include "TransitionEffect/TransitionEffect.h"
+#include "TransitionEffect/HorizontalEffect.h"
 #include <vector>
 
 /**
  * @brief Main class for LIM. Takes care of all major functions of LIM.
  * 
  */
-class LimManager
+class AppContainer : public Application
 {
 private:
     /** Vector of applications loaded */
@@ -37,20 +38,35 @@ private:
     /** Should apps cycle automatically? */
     bool enableAutoCycle = true;
     /** Default time, in milliseconds, and app should be displayed before the next one */
-    unsigned long autoCycleDuration = 30000;
+    unsigned long autoCycleDuration = 5000;
     /** Time of the last cycle */
     unsigned long lastCycleMillis = 0;
-
+    
     uint8_t calculateCycleApp(TransitionDirection direction);
 
+
+
 public:
-    LimManager();
+    AppContainer();
+    //TODO: Add destructor to delete pointers
 
     void AddApplication(Application* app);
+    
     void AppTransition(TransitionDirection direction);
 
-    void Update();
-    void Begin();
+    void Update() override;
+    void Begin() override;
+    
+    void doUpdate();
+    void doBegin();
+    void draw();
+
+    void setOffset(int8_t x, int8_t y) override;
+    void addOffset(int8_t x, int8_t y) override;
+
+    void setEffect(TransitionEffect* effect);
+
+    void setCycleDuration(unsigned long duration);
 };
 
 #endif

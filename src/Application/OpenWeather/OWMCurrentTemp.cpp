@@ -99,7 +99,7 @@ void OWMCurrentTemp::draw()
 {
 
     // Find the center of the text and draw it
-    matrix->setCursor(this->offset_x + 10, 7 - this->offset_y);
+    matrix->setCursor(this->offset_x + 10, 7 + this->offset_y);
     matrix->setFont(&TomThumb);
     matrix->setTextWrap(false);
     matrix->setTextColor(matrix->Color(255, 255, 255));
@@ -110,7 +110,7 @@ void OWMCurrentTemp::draw()
     //TODO: investigate why getTextBounds is returning one more character in bounds.
     // That's why we subtract 4 to the width.
     uint16_t xPos = floor(8 + (23 - (w - 4)) / 2);
-    matrix->setCursor(this->offset_x + xPos, 7 - this->offset_y);
+    matrix->setCursor(this->offset_x + xPos, 7 + this->offset_y);
     matrix->print(str);
     // Draw a single pixel for the degree symbol
     matrix->drawPixel(this->offset_x + xPos + w - 4, this->offset_y + y, matrix->Color(255, 255, 255));

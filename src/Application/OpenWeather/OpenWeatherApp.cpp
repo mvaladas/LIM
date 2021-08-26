@@ -37,6 +37,8 @@ void OpenWeatherApp::doBegin()
     currentTempApp = new OWMCurrentTemp(asyncOW, matrix);
     minMaxApp = new OWMMinMaxTemp(asyncOW, matrix);
 
+    currentlyShown = currentTempApp;
+
     // Update if necessary;
     asyncOW->Update();
 }
@@ -50,4 +52,9 @@ void OpenWeatherApp::doUpdate()
 
 void OpenWeatherApp::draw() {
 
+}
+
+void OpenWeatherApp::setFocus(boolean focus)
+{
+    this->forceFocus = true;
 }

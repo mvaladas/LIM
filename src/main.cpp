@@ -27,8 +27,9 @@
 #include "Application/OpenWeather/OWMCurrentTemp.h"
 #include "Application/OpenWeather/OWMMinMaxTemp.h"
 #include "Application/Matrix/MatrixApp.h"
-#include "LimManager.h"
+#include "AppContainer.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
+#include "TransitionEffect/VerticalEffect.h"
 
 #ifdef LIM_FASTLED
 
@@ -49,7 +50,7 @@ LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
 // Globals
 
 WiFiManager wifiManager;
-LimManager limManager;
+AppContainer limManager;
 
 /**
  * @brief Create the Apps and load them in the Lim Manager.
@@ -63,11 +64,17 @@ void createApps()
   AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
+  AppContainer* owm = new AppContainer();
+  owm->AddApplication(owmTemp);
+  owm->AddApplication(owmMinMax);
+  owm->setCycleDuration(5000);
+  owm->setEffect(new VerticalEffect());
   MatrixApp *matrixapp = new MatrixApp(&matrix);
 
+limManager.setEffect(new HorizontalEffect());
+  limManager.setCycleDuration(20000);
   limManager.AddApplication(clock);
-  limManager.AddApplication(owmTemp);
-  limManager.AddApplication(owmMinMax);
+  limManager.AddApplication(owm);
   limManager.AddApplication(matrixapp);
 }
 
@@ -79,7 +86,8 @@ void setup()
 {
 
   // Initialize Serial
-  //Serial.begin(9600);
+  Serial.begin(9600);
+  //Serial.end();
 //Serial.println(EspClass::getSdkVersion());
 
 // Initialize Matrix
@@ -88,7 +96,7 @@ void setup()
 #endif
 
   matrix.begin();
-  matrix.setBrightness(255 * 0.25);
+  matrix.setBrightness(255 * 0.30);
   matrix.clear();
 
   // Boot display

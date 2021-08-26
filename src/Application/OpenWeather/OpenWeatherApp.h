@@ -16,6 +16,7 @@
 #include "Application/OpenWeather/OWMCurrentTemp.h"
 #include "Application/OpenWeather/OWMMinMaxTemp.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
+#include "TransitionEffect/TransitionEffect.h"
 
 /**
  * @brief OpenWeather App. Shows Current Temperate and Daily Min/Max.
@@ -31,9 +32,17 @@ private:
     /** Reference to minmax app */
     OWMMinMaxTemp* minMaxApp;
 
-    virtual void doUpdate();
-    virtual void doBegin();
-    virtual void draw();
+    TransitionEffect* currentEffect;
+
+    Application* currentlyShown;
+    
+    unsigned long interval = 5000;
+
+    void doUpdate() override;
+    void doBegin() override;
+    void draw() override;
+    void setFocus(boolean focus) override;
+
 
 public:
     OpenWeatherApp(AsyncOpenWeather *asyncOW, LimMatrix *matrix);

@@ -1,5 +1,5 @@
 /**
- * @file HorizontalEffect.cpp
+ * @file VerticalEffect.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
  * @brief 
  * @version 0.1
@@ -10,7 +10,7 @@
  */
 
 #include "TransitionEffect/TransitionEffect.h"
-#include "HorizontalEffect.h"
+#include "VerticalEffect.h"
 #include "Application/Application.h"
 #include <LimMatrix/LimMatrix.h>
 
@@ -22,8 +22,7 @@
  * @param direction Direction of the transition
  * @param width Width of the transition
  */
-HorizontalEffect::HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t width) : 
-TransitionEffect(currentApp, nextApp, direction), steps(width), transitionInterval(HORIZONTAL_EFFECT_LENGTH / width)
+VerticalEffect::VerticalEffect(TransitionDirection direction, uint8_t steps) : TransitionEffect(direction), steps(steps), transitionInterval(VERTICAL_EFFECT_LENGTH / steps)
 {
 }
 
@@ -31,17 +30,21 @@ TransitionEffect(currentApp, nextApp, direction), steps(width), transitionInterv
  * @brief Initializes the transition
  * 
  */
-void HorizontalEffect::Begin()
+void VerticalEffect::Begin()
 {
+    int8_t currX, currY;
+    int8_t nextX, nextY;
+    currentApp->getOffset(&currX, &currY);
+    currentApp->getOffset(&nextX, &nextY);
     switch (direction)
     {
     case TRANSITION_FORWARD:
-        currentApp->setOffset(0, 0);
-        nextApp->setOffset(steps + 1, 0);
+        currentApp->setOffset(currX, 0);
+        nextApp->setOffset(nextX, steps + 2);
         break;
     case TRANSITION_BACKWARDS:
-        currentApp->setOffset(0, 0);
-        nextApp->setOffset(-steps - 1, 0);
+        currentApp->setOffset(currX, 0);
+        nextApp->setOffset(nextX, -steps - 2);
         break;
     default:
         break;
@@ -50,7 +53,7 @@ void HorizontalEffect::Begin()
 }
 
 /** * @brief Updates the transition effect by drawing whatever is needed. */
-void HorizontalEffect::Update()
+void VerticalEffect::Update()
 {
     unsigned long currentTime = millis();
     unsigned long interval = currentTime - lastCycleMillis;
@@ -59,11 +62,11 @@ void HorizontalEffect::Update()
     // Update App position
     if (interval >= transitionInterval)
     {
-        currentApp->addOffset(modifier, 0);
-        nextApp->addOffset(modifier, 0);
+        currentApp->addOffset(0, modifier);
+        nextApp->addOffset(0, modifier);
         int8_t x, y;
         nextApp->getOffset(&x, &y);
-        if (x == 0)
+        if (y == 0)
         {
             // The Effect has ended
             this->isRunning = false;

@@ -21,6 +21,10 @@ Application::Application(LimMatrix *matrix) : matrix(matrix)
 {
 }
 
+Application::Application()
+{
+}
+
 /** @brief Destroy the Application object */
 Application::~Application()
 {
@@ -97,4 +101,15 @@ void Application::Update()
 
     // draw is always called
     this->draw();
+}
+
+boolean Application::isForceFocus()
+{
+    return this->forceFocus;
+}
+
+void Application::setFocus(boolean focus)
+{
+    // Normally an application does not keep focus. Override for special cases
+    this->forceFocus = false;
 }

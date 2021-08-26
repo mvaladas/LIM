@@ -70,12 +70,12 @@ void OWMMinMaxTemp::draw()
     matrix->drawSprite(&hightemp_data[0][0], HIGHTEMP_FPS, HIGHTEMP_FRAME_COUNT, 
     this->offset_x, this->offset_y, HIGHTEMP_FRAME_WIDTH, HIGHTEMP_FRAME_HEIGHT);
 
-    matrix->setCursor(this->offset_x + 8, 7 - this->offset_y);
+    matrix->setCursor(this->offset_x + 8, 7 + this->offset_y);
     matrix->printf("%i",currentWeather->temp_max);
 
     matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT, 
     32-7-8 + this->offset_x, this->offset_y, LOWTEMP_FRAME_WIDTH, LOWTEMP_FRAME_HEIGHT);
 
-    matrix->setCursor(this->offset_x + (32 - 7), 7 - this->offset_y);
+    matrix->setCursor(this->offset_x + (32 - 7), 7 + this->offset_y);
     matrix->printf("%i",currentWeather->temp_min);
 }

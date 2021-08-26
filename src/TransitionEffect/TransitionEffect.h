@@ -40,11 +40,11 @@ protected:
     bool isRunning;
 
 public:
-    TransitionEffect(Application *currentApp, Application *nextApp, TransitionDirection direction);
-    virtual ~TransitionEffect();
+    TransitionEffect(TransitionDirection direction = TRANSITION_FORWARD);
+
+    void setApps(Application* currentApp, Application* nextApp);
 
     bool IsRunning();
-
     virtual void Begin() = 0;
     virtual void Update() = 0;
 };

@@ -41,6 +41,9 @@ protected:
     /** Reference to the matrix that will draw the application */
     LimMatrix *matrix;
 
+    /** Force this app to have focus and not transition */
+    boolean forceFocus = false;
+
     /** Abstract function to execute the acutal application update operations on specific class*/
     virtual void doUpdate() = 0;
     /** Abstract function to execute the acutal application begin operations on specific class*/
@@ -50,15 +53,19 @@ protected:
 
 public:
 
+    explicit Application();
     explicit Application(LimMatrix *matrix);
     virtual ~Application();
 
-    void Update();
-    void Begin();
+    virtual void Update();
+    virtual void Begin();
 
-    void getOffset(int8_t* x, int8_t* y);
-    void setOffset(int8_t x, int8_t y);
-    void addOffset(int8_t x, int8_t y);
+    virtual void getOffset(int8_t* x, int8_t* y);
+    virtual void setOffset(int8_t x, int8_t y);
+    virtual void addOffset(int8_t x, int8_t y);
+
+    boolean isForceFocus();
+    virtual void setFocus(boolean focus);
 
     void setUpdateInterval(unsigned long updateInterval);
 };

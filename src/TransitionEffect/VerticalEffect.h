@@ -1,5 +1,5 @@
 /**
- * @file HorizontalEffect.h
+ * @file VerticalEffect.h
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
  * @brief 
  * @version 0.1
@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef _H_HORIZONTALEFFECT
-#define _H_HORIZONTALEFFECT
+#ifndef _H_VERTICALEFFECT
+#define _H_VERTICALEFFECT
 
 #include "TransitionEffect/TransitionEffect.h"
 
@@ -18,20 +18,20 @@
  * @brief Horizontal Transition Effect of Apps
  * 
  */
-class HorizontalEffect : public TransitionEffect
+class VerticalEffect : public TransitionEffect
 {
 private:
     /** Length of time in millis for the transition */
-    static const unsigned long HORIZONTAL_EFFECT_LENGTH = 1000;
+    static const unsigned long VERTICAL_EFFECT_LENGTH = 1000;
     /** How long between each transition step */
-    unsigned long transitionInterval = HORIZONTAL_EFFECT_LENGTH / 32;
+    unsigned long transitionInterval = VERTICAL_EFFECT_LENGTH / 8;
     /** Last time, in millis, the transition updated */
     unsigned long lastCycleMillis = 0;
     /** Number of steps the transition lasts */
     uint8_t steps;
 
 public:
-    HorizontalEffect(Application *currentApp, Application *nextApp, TransitionDirection direction, uint8_t steps);
+    VerticalEffect(TransitionDirection direction = TRANSITION_FORWARD, uint8_t steps = 8);
     void Update() override;
     void Begin() override;
 };
