@@ -50,6 +50,15 @@ void printDigits(int digits)
     Serial.print('0');
   Serial.print(digits);
 }
+time_t getNtpTimeSimple()
+{
+  time_t now;                         // this is the epoch
+  tm tm;
+  time(&now);
+  localtime_r(&now, &tm);
+  return now;
+}
+
 
 /*-------- NTP code ----------*/
 

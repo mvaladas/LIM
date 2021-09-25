@@ -23,6 +23,9 @@
 #include <LimMatrix/LimMatrix.h>
 #include <WiFiManager.h>
 #include "NTPUpdater.h"
+#include <Arduino.h>
+#include <time.h>
+#include <TZ.h>
 
 #include "Application/DateClock/DateClock.h"
 #include "Application/OpenWeather/OWMCurrentTemp.h"
@@ -48,8 +51,11 @@ LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
                              NEO_GRB + NEO_KHZ800);
 #endif
 
-// Globals
+/* Configuration of NTP */
+// http://werner.rothschopf.net/202011_arduino_esp8266_ntp_en.htm
+#define MY_NTP_SERVER "europe.pool.ntp.org"
 
+// Globals
 WiFiManager wifiManager;
 AppContainer limManager;
 
@@ -66,7 +72,7 @@ void createApps()
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
   AppContainer *owm = new AppContainer();
-  //owm->AddApplication(owmTemp);
+  owm->AddApplication(owmTemp);
   owm->AddApplication(owmMinMax);
   owm->setCycleDuration(10000);
   owm->setEffect(new VerticalEffect());
@@ -89,7 +95,7 @@ void setup()
   // Initialize Serial
   //Serial.begin(9600);
   //Serial.println(EspClass::getSdkVersion());
-    Serial.end();
+  Serial.end();
 
 // Initialize Matrix
 #ifdef LIM_FASTLED
@@ -109,7 +115,7 @@ void setup()
   wifiManager.autoConnect("Clocky");
 
   // Start NTP Updater
-  NTPSetup();
+  configTime(TZ_Europe_Berlin, MY_NTP_SERVER);
 
   // Initialize LIM
   createApps();

@@ -82,5 +82,5 @@ void OWMMinMaxTemp::draw()
     matrix->setTextColor(matrix->Color(255, 255, 255));
     matrix->setCursor(this->offset_x + (32 - 9), 7 + this->offset_y);
     matrix->printf("%i",currentWeather->temp_min);
-    matrix->drawPixel(this->offset_x + 32 - 5, this->offset_y + 2, matrix->Color(255, 255, 255));
+    matrix->drawPixel(this->offset_x + 32 - (currentWeather->temp_min < 10 ? 5 : 1), this->offset_y + 2, matrix->Color(255, 255, 255));
 }

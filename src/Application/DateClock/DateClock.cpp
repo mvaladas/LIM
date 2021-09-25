@@ -12,7 +12,7 @@
 #include "DateClock.h"
 #include "Application/Application.h"
 #include "utils.h"
-#include <TimeLib.h>
+#include <time.h>
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
 
@@ -22,6 +22,7 @@
  */
 DateClock::~DateClock()
 {
+  this->updateInterval = 60 * 60 * 1000;
 }
 
 /**
@@ -56,12 +57,16 @@ void DateClock::drawCalendar()
 {
   int16_t x, y;
   uint16_t w, h;
+  time_t now;
+  tm tm;
+  time(&now);
+  localtime_r(&now, &tm);
 
   // Draw calendar icon
   matrix->fillRect(this->offset_x + 0, this->offset_y + 0, 9, 2, matrix->Color(255, 0, 0));
   matrix->fillRect(this->offset_x + 0, this->offset_y + 2, 9, 6, matrix->Color(255, 255, 255));
 
-  auto daystr = String(day());
+  auto daystr = String(tm.tm_mday);
 
   matrix->setFont(&Tiny3x3a2pt7b);
   matrix->setTextColor(matrix->Color(0, 0, 0));
@@ -76,10 +81,15 @@ void DateClock::drawCalendar()
  */
 void DateClock::drawClock()
 {
-  unsigned long hours = hour();
+  time_t now;
+  tm tm;
+  time(&now);
+  localtime_r(&now, &tm);
+
+  unsigned long hours = tm.tm_hour;
   String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
 
-  unsigned long minutes = minute();
+  unsigned long minutes = tm.tm_min;
   String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
 
   String clockStr = hoursStr + ":" + minuteStr;
