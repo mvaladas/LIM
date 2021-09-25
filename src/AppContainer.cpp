@@ -73,10 +73,11 @@ void AppContainer::Update()
     //If autocycle is enabled
     if (enableAutoCycle)
     {
-        if ((millis() - lastCycleMillis >= autoCycleDuration) && !currentEffect->IsRunning())
+        unsigned long currentMillis = millis();
+        if ((currentMillis - lastCycleMillis >= autoCycleDuration) && !currentEffect->IsRunning())
         {
             AppTransition(TRANSITION_FORWARD);
-            lastCycleMillis = millis();
+            lastCycleMillis = currentMillis;
         }
     }
 }

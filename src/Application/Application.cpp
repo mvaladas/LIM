@@ -21,6 +21,10 @@ Application::Application(LimMatrix *matrix) : matrix(matrix)
 {
 }
 
+/**
+ * @brief Construct a new Application:: Application object
+ * 
+ */
 Application::Application()
 {
 }
@@ -92,22 +96,33 @@ void Application::Begin()
  */
 void Application::Update()
 {
+    unsigned long currentMillis = millis();
     // Check if enough time has passed to call doUpdate
-    if ((millis() - this->previousUpdate) >= this->updateInterval)
+    if ((currentMillis - this->previousUpdate) >= this->updateInterval)
     {
         this->doUpdate();
-        this->previousUpdate = millis();
+        this->previousUpdate = currentMillis;
     }
 
     // draw is always called
     this->draw();
 }
 
+/**
+ * @brief Checks if the application is requesting the forcing of focus
+ * 
+ * @return boolean if force focus is true
+ */
 boolean Application::isForceFocus()
 {
     return this->forceFocus;
 }
 
+/**
+ * @brief Sets the force focus flag
+ * 
+ * @param focus the value of the flag to set
+ */
 void Application::setFocus(boolean focus)
 {
     // Normally an application does not keep focus. Override for special cases

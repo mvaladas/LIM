@@ -22,6 +22,7 @@
 
 #include <LimMatrix/LimMatrix.h>
 #include <WiFiManager.h>
+#include "NTPUpdater.h"
 
 #include "Application/DateClock/DateClock.h"
 #include "Application/OpenWeather/OWMCurrentTemp.h"
@@ -33,8 +34,8 @@
 
 #ifdef LIM_FASTLED
 
-#define FASTLED_INTERRUPT_RETRY_COUNT 1
-#define FASTLED_ALLOW_INTERRUPTS 0
+// #define FASTLED_INTERRUPT_RETRY_COUNT 1
+// #define FASTLED_ALLOW_INTERRUPTS 0
 
 CRGB matrixleds[32 * 8];
 LimMatrix matrix = LimMatrix(matrixleds, 32, 8, 1, 1,
@@ -64,14 +65,14 @@ void createApps()
   AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
-  AppContainer* owm = new AppContainer();
-  owm->AddApplication(owmTemp);
+  AppContainer *owm = new AppContainer();
+  //owm->AddApplication(owmTemp);
   owm->AddApplication(owmMinMax);
-  owm->setCycleDuration(5000);
+  owm->setCycleDuration(10000);
   owm->setEffect(new VerticalEffect());
   MatrixApp *matrixapp = new MatrixApp(&matrix);
 
-limManager.setEffect(new HorizontalEffect());
+  limManager.setEffect(new HorizontalEffect());
   limManager.setCycleDuration(20000);
   limManager.AddApplication(clock);
   limManager.AddApplication(owm);
@@ -86,9 +87,9 @@ void setup()
 {
 
   // Initialize Serial
-  Serial.begin(9600);
-  //Serial.end();
-//Serial.println(EspClass::getSdkVersion());
+  //Serial.begin(9600);
+  //Serial.println(EspClass::getSdkVersion());
+    Serial.end();
 
 // Initialize Matrix
 #ifdef LIM_FASTLED
@@ -106,6 +107,9 @@ void setup()
 
   // Start Wifi
   wifiManager.autoConnect("Clocky");
+
+  // Start NTP Updater
+  NTPSetup();
 
   // Initialize LIM
   createApps();

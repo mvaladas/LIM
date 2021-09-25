@@ -24,7 +24,7 @@ class Utils
      * @param rgbColor a 24 bit RGB color. The 8 most sigificant bits of the input parameter are ignored.
      * @return uint16_t a 16bit color in the 5-6-5 format.
      */
-    static uint16_t RGBto565(uint32_t rgbColor)
+    inline static uint16_t RGBto565(uint32_t rgbColor)
     {
         return (((rgbColor & 0xf80000) >> 8) + ((rgbColor & 0xfc00) >> 5) + ((rgbColor & 0xf8) >> 3));
     }

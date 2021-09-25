@@ -15,6 +15,7 @@
 
 #include "Sprites/Weather/LowTemp.h"
 #include "Sprites/Weather/HighTemp.h"
+#include "Sprites/Weather/DayNightTemp.h"
 
 /**
  * @brief Construct a new OWMMinMaxTemp::OWMMinMaxTemp object
@@ -65,17 +66,21 @@ void OWMMinMaxTemp::draw()
     
     matrix->setTextWrap(false);
     matrix->setFont(&TomThumb);
-    matrix->setTextColor(matrix->Color(255, 255, 255));
+    matrix->setTextColor(matrix->Color(255,255,255));
 
-    matrix->drawSprite(&hightemp_data[0][0], HIGHTEMP_FPS, HIGHTEMP_FRAME_COUNT, 
-    this->offset_x, this->offset_y, HIGHTEMP_FRAME_WIDTH, HIGHTEMP_FRAME_HEIGHT);
+    matrix->drawSprite(&daynighttemp_data[0][0], DAYNIGHTTEMP_FPS, DAYNIGHTTEMP_FRAME_COUNT, 
+    this->offset_x, this->offset_y, DAYNIGHTTEMP_FRAME_WIDTH, DAYNIGHTTEMP_FRAME_HEIGHT);
 
-    matrix->setCursor(this->offset_x + 8, 7 + this->offset_y);
+    matrix->setCursor(this->offset_x + 6, 7 + this->offset_y);
     matrix->printf("%i",currentWeather->temp_max);
+    // Draw a single pixel for the degree symbol
+    matrix->drawPixel(this->offset_x + 14, this->offset_y + 2, matrix->Color(255, 255, 255));
 
-    matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT, 
-    32-7-8 + this->offset_x, this->offset_y, LOWTEMP_FRAME_WIDTH, LOWTEMP_FRAME_HEIGHT);
+    // matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT, 
+    // 32-7-8 + this->offset_x, this->offset_y, LOWTEMP_FRAME_WIDTH, LOWTEMP_FRAME_HEIGHT);
 
-    matrix->setCursor(this->offset_x + (32 - 7), 7 + this->offset_y);
+    matrix->setTextColor(matrix->Color(255, 255, 255));
+    matrix->setCursor(this->offset_x + (32 - 9), 7 + this->offset_y);
     matrix->printf("%i",currentWeather->temp_min);
+    matrix->drawPixel(this->offset_x + 32 - 5, this->offset_y + 2, matrix->Color(255, 255, 255));
 }

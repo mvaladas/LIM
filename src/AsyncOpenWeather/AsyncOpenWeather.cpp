@@ -87,7 +87,7 @@ void AsyncOpenWeather::Update()
         if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
         {
             String fullUrl = String("http://api.openweathermap.org/" + url).c_str();
-            Serial.println(fullUrl);
+            // Serial.println(fullUrl);
             requestOpenResult = request.open("GET", fullUrl.c_str());
 
             if (requestOpenResult)
@@ -117,7 +117,7 @@ void AsyncOpenWeather::UpdateForeCast()
         {
             String fullUrl = String("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + "&cnt=1&appid=" + apiKey + "&units=metric")
                                  .c_str();
-            Serial.println(fullUrl);
+            // Serial.println(fullUrl);
             requestOpenResult = request.open("GET", fullUrl.c_str());
 
             if (requestOpenResult)

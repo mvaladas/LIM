@@ -22,7 +22,7 @@ class VerticalEffect : public TransitionEffect
 {
 private:
     /** Length of time in millis for the transition */
-    static const unsigned long VERTICAL_EFFECT_LENGTH = 1000;
+    static const unsigned long VERTICAL_EFFECT_LENGTH = 250;
     /** How long between each transition step */
     unsigned long transitionInterval = VERTICAL_EFFECT_LENGTH / 8;
     /** Last time, in millis, the transition updated */

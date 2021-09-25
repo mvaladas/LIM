@@ -1,7 +1,6 @@
 /**
  * @file MatrixApp.h
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
- * @brief 
  * @version 0.1
  * @date 23-08-212021
  * 
@@ -15,7 +14,7 @@
 #include "Application/Application.h"
 
 /**
- * @brief Matrix App
+ * @brief Matrix Application. A screen saver that looks like the matrix movie screen saver
  * 
  */
 class MatrixApp : public Application

@@ -113,7 +113,7 @@ void OWMCurrentTemp::draw()
     matrix->setCursor(this->offset_x + xPos, 7 + this->offset_y);
     matrix->print(str);
     // Draw a single pixel for the degree symbol
-    matrix->drawPixel(this->offset_x + xPos + w - 4, this->offset_y + y, matrix->Color(255, 255, 255));
+    matrix->drawPixel(this->offset_x + xPos + w - 4, this->offset_y + 2, matrix->Color(255, 255, 255));
 
     // Draw the bitmap
     drawSprite();

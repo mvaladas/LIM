@@ -1,7 +1,7 @@
 /**
  * @file DateClock.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
- * @brief DateClock class definition
+ * @brief DateClock class
  * @version 0.1
  * @date 18-08-212021
  * 
@@ -12,8 +12,6 @@
 #include "DateClock.h"
 #include "Application/Application.h"
 #include "utils.h"
-#include <NTPClient.h>
-#include <WiFiUdp.h>
 #include <TimeLib.h>
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
@@ -24,14 +22,6 @@
  */
 DateClock::~DateClock()
 {
-  if (ntpUDP != nullptr)
-  {
-    delete ntpUDP;
-  }
-  if (timeClient != nullptr)
-  {
-    delete timeClient;
-  }
 }
 
 /**
@@ -40,26 +30,12 @@ DateClock::~DateClock()
  */
 void DateClock::doBegin()
 {
-  if (ntpUDP != nullptr)
-  {
-    delete ntpUDP;
-  }
-  if (timeClient != nullptr)
-  {
-    delete timeClient;
-  }
-  ntpUDP = new WiFiUDP();
-  timeClient = new NTPClient(*ntpUDP, "europe.pool.ntp.org", 2 * 3600, 60000);
-  timeClient->begin();
+
 }
 
-/**
- * @brief Updates the current time
- * 
- */
 void DateClock::doUpdate()
 {
-  timeClient->update();
+
 }
 
 /** 
@@ -85,7 +61,7 @@ void DateClock::drawCalendar()
   matrix->fillRect(this->offset_x + 0, this->offset_y + 0, 9, 2, matrix->Color(255, 0, 0));
   matrix->fillRect(this->offset_x + 0, this->offset_y + 2, 9, 6, matrix->Color(255, 255, 255));
 
-  auto daystr = String(day(timeClient->getEpochTime()));
+  auto daystr = String(day());
 
   matrix->setFont(&Tiny3x3a2pt7b);
   matrix->setTextColor(matrix->Color(0, 0, 0));
@@ -100,11 +76,10 @@ void DateClock::drawCalendar()
  */
 void DateClock::drawClock()
 {
-  unsigned long rawTime = timeClient->getEpochTime();
-  unsigned long hours = hour(rawTime);
+  unsigned long hours = hour();
   String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
 
-  unsigned long minutes = (rawTime % 3600) / 60;
+  unsigned long minutes = minute();
   String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
 
   String clockStr = hoursStr + ":" + minuteStr;
