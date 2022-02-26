@@ -21,6 +21,12 @@ class OWMMinMaxTemp : public Application
 private:
     /** Reference to Async Open Weather instance */
     AsyncOpenWeather *asyncOW;
+    
+    /** Current sprite frame */
+    uint16_t currentFrameIdx;
+
+    /** When was the last frame drawn */
+    unsigned long lastFrameTime;
 
     virtual void doUpdate();
     virtual void doBegin();

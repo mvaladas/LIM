@@ -77,7 +77,6 @@ void AppContainer::Update()
         if ((currentMillis - lastCycleMillis >= autoCycleDuration) && !currentEffect->IsRunning())
         {
             AppTransition(TRANSITION_FORWARD);
-            lastCycleMillis = currentMillis;
         }
     }
 }
@@ -104,7 +103,7 @@ uint8_t AppContainer::calculateCycleApp(TransitionDirection direction)
     }
     if ((this->currentAppIdx + modifier) < 0)
     {
-        return apps.size();
+        return apps.size() - 1;
     }
     else if ((this->currentAppIdx + modifier) > (apps.size() - 1))
     {
@@ -133,7 +132,9 @@ void AppContainer::AppTransition(TransitionDirection direction)
         return;
     }
     this->currentEffect->setApps(this->apps[currentAppIdx], this->apps[nextAppIdx]);
+    this->currentEffect->setDirection(direction);
     this->currentEffect->Begin();
+    lastCycleMillis = millis();
 }
 
 void AppContainer::setEffect(TransitionEffect* effect)
@@ -182,4 +183,8 @@ void AppContainer::addOffset(int8_t x, int8_t y)
     {
         app->addOffset(x, y);
     }
+}
+bool AppContainer::isTransitioning()
+{
+    return currentEffect->IsRunning();
 }

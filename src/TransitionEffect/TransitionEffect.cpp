@@ -38,3 +38,7 @@ void TransitionEffect::setApps(Application* currentApp, Application* nextApp)
     this->currentApp = currentApp;
     this->nextApp = nextApp;
 }
+
+void TransitionEffect::setDirection(TransitionDirection direction) {
+    this->direction = direction;
+}

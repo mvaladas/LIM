@@ -4,9 +4,9 @@
  * @brief definition of OWMMInMaxTemp
  * @version 0.1
  * @date 23-08-212021
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "OWMMinMaxTemp.h"
@@ -19,7 +19,7 @@
 
 /**
  * @brief Construct a new OWMMinMaxTemp::OWMMinMaxTemp object
- * 
+ *
  * @param asyncOw reference to an AsyncOpenWeather instance
  * @param matrix Drawing matrix where to draw the app
  * @param apiKey OpenWeather Map API Key
@@ -31,7 +31,7 @@ OWMMinMaxTemp::OWMMinMaxTemp(AsyncOpenWeather *asyncOW, LimMatrix *matrix) : App
 
 /**
  * @brief Updates the weather data.
- * 
+ *
  */
 void OWMMinMaxTemp::doUpdate()
 {
@@ -40,17 +40,19 @@ void OWMMinMaxTemp::doUpdate()
 
 /**
  * @brief Initialize the App
- * 
+ *
  */
 void OWMMinMaxTemp::doBegin()
 {
+    this->lastFrameTime = 0;
+    this->currentFrameIdx = 0;
     // Update once at startup.
     this->doUpdate();
 }
 
 /**
  * @brief Draw the weather icon on the matrix
- * 
+ *
  */
 void OWMMinMaxTemp::drawSprite()
 {
@@ -58,29 +60,39 @@ void OWMMinMaxTemp::drawSprite()
 
 /**
  * @brief Draw the Application on the matrix
- * 
+ *
  */
 void OWMMinMaxTemp::draw()
 {
     auto currentWeather = this->asyncOW->getCurrentForecast();
-    
+    unsigned long currentMillis = millis();
+
     matrix->setTextWrap(false);
     matrix->setFont(&TomThumb);
-    matrix->setTextColor(matrix->Color(255,255,255));
+    matrix->setTextColor(matrix->Color(255, 255, 255));
 
-    matrix->drawSprite(&daynighttemp_data[0][0], DAYNIGHTTEMP_FPS, DAYNIGHTTEMP_FRAME_COUNT, 
-    this->offset_x, this->offset_y, DAYNIGHTTEMP_FRAME_WIDTH, DAYNIGHTTEMP_FRAME_HEIGHT);
+    const Sprite *sprite = &DayNightTemp;
+
+    if ((currentMillis - this->lastFrameTime) >= sprite->frameduration[currentFrameIdx])
+    {
+        if (++(this->currentFrameIdx) >= sprite->frameCount)
+        {
+            this->currentFrameIdx = 0;
+        }
+        this->lastFrameTime = currentMillis;
+    }
+    matrix->drawRGB24Bitmap(this->offset_x, this->offset_y, sprite->frames + (currentFrameIdx * sprite->width * sprite->height), sprite->width, sprite->height);
 
     matrix->setCursor(this->offset_x + 6, 7 + this->offset_y);
-    matrix->printf("%i",currentWeather->temp_max);
+    matrix->printf("%i", currentWeather->temp_max);
     // Draw a single pixel for the degree symbol
-    matrix->drawPixel(this->offset_x + 14, this->offset_y + 2, matrix->Color(255, 255, 255));
+    matrix->drawPixel(this->offset_x + (currentWeather->temp_max < 10 ? 10 : 14), this->offset_y + 2, matrix->Color(255, 255, 255));
 
-    // matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT, 
+    // matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT,
     // 32-7-8 + this->offset_x, this->offset_y, LOWTEMP_FRAME_WIDTH, LOWTEMP_FRAME_HEIGHT);
 
     matrix->setTextColor(matrix->Color(255, 255, 255));
     matrix->setCursor(this->offset_x + (32 - 9), 7 + this->offset_y);
-    matrix->printf("%i",currentWeather->temp_min);
+    matrix->printf("%i", currentWeather->temp_min);
     matrix->drawPixel(this->offset_x + 32 - (currentWeather->temp_min < 10 ? 5 : 1), this->offset_y + 2, matrix->Color(255, 255, 255));
 }

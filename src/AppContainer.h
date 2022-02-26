@@ -67,6 +67,8 @@ public:
     void setEffect(TransitionEffect* effect);
 
     void setCycleDuration(unsigned long duration);
+
+    bool isTransitioning();
 };
 
 #endif

@@ -44,6 +44,8 @@ public:
 
     void setApps(Application* currentApp, Application* nextApp);
 
+    void setDirection(TransitionDirection direction);
+
     bool IsRunning();
     virtual void Begin() = 0;
     virtual void Update() = 0;

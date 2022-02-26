@@ -1,12 +1,12 @@
 /**
  * @file OWMCurrentTemp.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 17-08-212021
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "OWMCurrentTemp.h"
@@ -24,19 +24,19 @@
 
 /**
  * @brief Construct a new Open Weather:: Open Weather object
- * 
+ *
  * @param asyncOw reference to an AsyncOpenWeather instance
  * @param matrix Drawing matrix where to draw the app
  * @param apiKey OpenWeather Map API Key
  * @param city City to fetch weather data
  */
-OWMCurrentTemp::OWMCurrentTemp(AsyncOpenWeather* asyncOW, LimMatrix *matrix) : Application(matrix), asyncOW(asyncOW)
+OWMCurrentTemp::OWMCurrentTemp(AsyncOpenWeather *asyncOW, LimMatrix *matrix) : Application(matrix), asyncOW(asyncOW)
 {
 }
 
 /**
  * @brief Updates the weather data.
- * 
+ *
  */
 void OWMCurrentTemp::doUpdate()
 {
@@ -45,59 +45,81 @@ void OWMCurrentTemp::doUpdate()
 
 /**
  * @brief Initialize the App
- * 
+ *
  */
 void OWMCurrentTemp::doBegin()
 {
     // Update once at startup.
     this->doUpdate();
+    this->currentFrameIdx = 0;
 }
 
 /**
  * @brief Draw the weather icon on the matrix
- * 
+ *
  */
 void OWMCurrentTemp::drawSprite()
 {
 
-    uint16_t currentid = asyncOW->getCurrentWeather()->id;
+    uint16_t weatherId = asyncOW->getCurrentWeather()->id;
+    unsigned long currentMillis = millis();
 
+    // reset frame if a new icon is to be shown
+    if (this->currentid != weatherId)
+    {
+        Serial.println("3");
+        this->currentFrameIdx = 0;
+        this->lastFrameTime = 0;
+    }
+
+    this->currentid = weatherId;
+
+    Sprite* sprite;
     // See https://openweathermap.org/weather-conditions
     switch (currentid)
     {
-    case 200 ... 299: //Group 2xx: Thunderstorm
-        matrix->drawSprite(&thunderstorm_data[0][0], THUNDERSTORM_FPS, THUNDERSTORM_FRAME_COUNT, this->offset_x, this->offset_y, THUNDERSTORM_FRAME_WIDTH, THUNDERSTORM_FRAME_HEIGHT);
+    case 200 ... 299: // Group 2xx: Thunderstorm
+        sprite = &Thunderstorm;
         break;
-    case 300 ... 399: //Group 3xx: Drizzle
-        matrix->drawSprite(&drizzle_data[0][0], DRIZZLE_FPS, DRIZZLE_FRAME_COUNT, this->offset_x, this->offset_y, DRIZZLE_FRAME_WIDTH, DRIZZLE_FRAME_HEIGHT);
+    case 300 ... 399: // Group 3xx: Drizzle
+        sprite = &Drizzle;
         break;
-    case 500 ... 599: //Group 5xx: Rain
-        matrix->drawSprite(&rain_data[0][0], RAIN_FPS, RAIN_FRAME_COUNT, this->offset_x, this->offset_y, RAIN_FRAME_WIDTH, RAIN_FRAME_HEIGHT);
+    case 500 ... 599: // Group 5xx: Rain
+        sprite = &Rain;
         break;
-    case 600 ... 699: //Group 6xx: Snow
-        matrix->drawSprite(&snow_data[0][0], SNOW_FPS, SNOW_FRAME_COUNT, this->offset_x, this->offset_y, SNOW_FRAME_WIDTH, SNOW_FRAME_HEIGHT);
+    case 600 ... 699: // Group 6xx: Snow
+        sprite = &Snow;
         break;
-    case 700 ... 799: //Group 7xx: Atmosphere
-        matrix->drawSprite(&mist_data[0][0], MIST_FPS, MIST_FRAME_COUNT, this->offset_x, this->offset_y, MIST_FRAME_WIDTH, MIST_FRAME_HEIGHT);
+    case 700 ... 799: // Group 7xx: Atmosphere
+        sprite = &Mist;
         break;
     case 800: // 800: Clear
-        matrix->drawSprite(&clear_data[0][0], CLEAR_FPS, CLEAR_FRAME_COUNT, this->offset_x, this->offset_y, CLEAR_FRAME_WIDTH, CLEAR_FRAME_HEIGHT);
+        sprite = &Clear;
         break;
-    case 801 ... 899: //Group 8xx: Clouds
-        matrix->drawSprite(&cloudy_data[0][0], CLOUDY_FPS, CLOUDY_FRAME_COUNT, this->offset_x, this->offset_y, CLOUDY_FRAME_WIDTH, CLOUDY_FRAME_HEIGHT);
+    case 801 ... 899: // Group 8xx: Clouds
+        sprite = &Cloudy;
         break;
     default:
-        break;
+        return;
     }
+
+    if ((currentMillis - this->lastFrameTime) >= sprite->frameduration[currentFrameIdx])
+    {
+        if (++(this->currentFrameIdx) >= sprite->frameCount)
+        {
+            this->currentFrameIdx = 0;
+        }
+        this->lastFrameTime = currentMillis;
+    }
+    matrix->drawRGB24Bitmap(this->offset_x, this->offset_y, sprite->frames + (currentFrameIdx * sprite->width * sprite->height), sprite->width, sprite->height);
 }
 
 /**
  * @brief Draw the Application on the matrix
- * 
+ *
  */
 void OWMCurrentTemp::draw()
 {
-
     // Find the center of the text and draw it
     matrix->setCursor(this->offset_x + 10, 7 + this->offset_y);
     matrix->setFont(&TomThumb);
@@ -107,8 +129,8 @@ void OWMCurrentTemp::draw()
     uint16_t w, h;
     String str(this->asyncOW->getCurrentWeather()->temp);
     matrix->getTextBounds(str, this->offset_x + 10, this->offset_y + 7, &x, &y, &w, &h);
-    //TODO: investigate why getTextBounds is returning one more character in bounds.
-    // That's why we subtract 4 to the width.
+    // TODO: investigate why getTextBounds is returning one more character in bounds.
+    //  That's why we subtract 4 to the width.
     uint16_t xPos = floor(8 + (23 - (w - 4)) / 2);
     matrix->setCursor(this->offset_x + xPos, 7 + this->offset_y);
     matrix->print(str);
