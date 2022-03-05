@@ -69,6 +69,8 @@ public:
     void setCycleDuration(unsigned long duration);
 
     bool isTransitioning();
+
+    void buttonEvent(uint8_t btnEvent);
 };
 
 #endif

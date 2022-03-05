@@ -1,12 +1,12 @@
 /**
  * @file AppContainer.cpp
  * @author Miguel Valadas (mvaladas@users.noreply.github.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 18-08-212021
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "AppContainer.h"
@@ -16,7 +16,7 @@
 
 /**
  * @brief Construct a new Lim Manager:: Lim Manager object
- * 
+ *
  */
 AppContainer::AppContainer()
 {
@@ -26,7 +26,7 @@ AppContainer::AppContainer()
 
 /**
  * @brief Adds an application to LIM
- * 
+ *
  * @param app reference to the application
  */
 void AppContainer::AddApplication(Application *app)
@@ -36,7 +36,7 @@ void AppContainer::AddApplication(Application *app)
 
 /**
  * @brief Initialize the LIM Manager. Calls all of the begin function of previously added apps.
- * 
+ *
  */
 void AppContainer::Begin()
 {
@@ -49,13 +49,14 @@ void AppContainer::Begin()
 
 /**
  * @brief LIM Manager Update Function. Should be called every loop.
- * 
+ *
  * @details The update function makes sure to call the update of the currently displayed app
- * or the update of the currently running transition effect. Will also trigger the application cycle if 
+ * or the update of the currently running transition effect. Will also trigger the application cycle if
  * auto-cycle is enabled.
  */
 void AppContainer::Update()
 {
+    Serial.println("AppContainer: Update");
     if (this->currentEffect->IsRunning())
     {
         this->currentEffect->Update();
@@ -70,7 +71,7 @@ void AppContainer::Update()
         apps[currentAppIdx]->Update();
     }
 
-    //If autocycle is enabled
+    // If autocycle is enabled
     if (enableAutoCycle)
     {
         unsigned long currentMillis = millis();
@@ -83,7 +84,7 @@ void AppContainer::Update()
 
 /**
  * @brief calculates the index of the next application to display
- * 
+ *
  * @param direction direction of the next applicaton
  * @return uint8_t index of the next application
  */
@@ -117,7 +118,7 @@ uint8_t AppContainer::calculateCycleApp(TransitionDirection direction)
 
 /**
  * @brief Starts the transition of applications in the given direction
- * 
+ *
  * @param direction direction of the transition
  */
 
@@ -137,7 +138,7 @@ void AppContainer::AppTransition(TransitionDirection direction)
     lastCycleMillis = millis();
 }
 
-void AppContainer::setEffect(TransitionEffect* effect)
+void AppContainer::setEffect(TransitionEffect *effect)
 {
     if (this->currentEffect != nullptr)
     {
@@ -156,14 +157,14 @@ void AppContainer::setCycleDuration(unsigned long duration)
 }
 
 /**
-     * @brief Set the X,Y offset of the application. (0,0) being the top, left pixel.
-     * 
-     * @param x offset in X
-     * @param y offset in Y
-     */
+ * @brief Set the X,Y offset of the application. (0,0) being the top, left pixel.
+ *
+ * @param x offset in X
+ * @param y offset in Y
+ */
 void AppContainer::setOffset(int8_t x, int8_t y)
 {
-    Application::setOffset(x,y);
+    Application::setOffset(x, y);
     for (auto &&app : apps)
     {
         app->setOffset(x, y);
@@ -171,14 +172,14 @@ void AppContainer::setOffset(int8_t x, int8_t y)
 }
 
 /**
-     * @brief Adds the passed parameters to the X,Y offset of the application
-     * 
-     * @param x value to add to the X offset
-     * @param y value to add to the Y offset
-     */
+ * @brief Adds the passed parameters to the X,Y offset of the application
+ *
+ * @param x value to add to the X offset
+ * @param y value to add to the Y offset
+ */
 void AppContainer::addOffset(int8_t x, int8_t y)
 {
-    Application::addOffset(x,y);
+    Application::addOffset(x, y);
     for (auto &&app : apps)
     {
         app->addOffset(x, y);
@@ -187,4 +188,25 @@ void AppContainer::addOffset(int8_t x, int8_t y)
 bool AppContainer::isTransitioning()
 {
     return currentEffect->IsRunning();
+}
+
+void AppContainer::buttonEvent(uint8_t btnEvent)
+{
+    // Only accept keys if not transitioning
+    if (!this->isTransitioning())
+    {
+        switch (btnEvent)
+        {
+        case BTN_LEFT_PRESS:
+            this->AppTransition(TransitionDirection::TRANSITION_BACKWARDS);
+            // dfmp3.playMp3FolderTrack(5);
+            break;
+        case BTN_RIGHT_PRESS:
+            this->AppTransition(TransitionDirection::TRANSITION_FORWARD);
+            // dfmp3.playMp3FolderTrack(5);
+            break;
+        default:
+            break;
+        }
+    }
 }

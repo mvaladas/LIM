@@ -27,9 +27,10 @@
 
 #include "Utils.h"
 
+#include <stack>
+
 #include "LimMatrix/LimMatrix.h"
 #include <WiFiManager.h>
-#include "NTPUpdater.h"
 #include <Arduino.h>
 #include <Wire.h>
 #include <time.h>
@@ -50,6 +51,10 @@
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 #include "TransitionEffect/VerticalEffect.h"
 #include "ButtonManager.h"
+#include "Sprites/LIMLogo.h"
+
+#define DEBUG true
+#define Serial if(DEBUG)Serial
 
 #ifdef LIM_FASTLED
 
@@ -69,8 +74,8 @@ LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
 
 // Globals
 WiFiManager wifiManager;
-AppContainer limManager;
-ButtonManager btmgn;
+std::stack<AppContainer> appStack;
+ButtonManager btnmgn;
 
 // instantiate temp sensor
 BME280<> BMESensor;
@@ -135,6 +140,7 @@ public:
  */
 void createApps()
 {
+  Serial.println("Create Apps");
   // These never get deleted because there is no shutdown in the microprocessor.
   DateClock *clock = new DateClock(&matrix);
   // IndoorTemp *temp = new IndoorTemp(&matrix);
@@ -149,6 +155,7 @@ void createApps()
   owm->setEffect(new VerticalEffect());
   MatrixApp *matrixapp = new MatrixApp(&matrix);
 
+  AppContainer limManager = AppContainer();
   limManager.setEffect(new HorizontalEffect());
   limManager.setCycleDuration(20000);
   limManager.AddApplication(clock);
@@ -156,6 +163,9 @@ void createApps()
   limManager.AddApplication(owm);
   limManager.AddApplication(matrixapp);
   // limManager.AddApplication(owmTemp);
+
+  limManager.Begin();
+  appStack.push(limManager);
 }
 
 /**
@@ -202,8 +212,8 @@ void setup()
   pinMode(keyLeft, INPUT_PULLUP);
   pinMode(keyRight, INPUT_PULLUP);
   pinMode(keyOk, INPUT_PULLUP);
-  btmgn.addButton(keyLeft, false);
-  btmgn.addButton(keyRight, false);
+  btnmgn.registerButton(keyLeft, false);
+  btnmgn.registerButton(keyRight, false);
 
 // Initialize Matrix
 #ifdef LIM_FASTLED
@@ -215,19 +225,19 @@ void setup()
   matrix.clear();
 
   // Boot display
+  matrix.drawRGB24Bitmap(0,0, LIMLogo.frames, 32, 8);
   // TODO: better/prettier boot display.
-  matrix.print(F("boot"));
+
   matrix.show();
 
   // Start Wifi
   wifiManager.autoConnect("Clocky");
 
-  // Start NTP Updater
+  // Config NTP Update parameters for the time library
   configTime(TZ_Europe_Berlin, MY_NTP_SERVER);
 
   // Initialize LIM
   createApps();
-  limManager.Begin();
 }
 
 /**
@@ -236,29 +246,12 @@ void setup()
  */
 void loop()
 {
-
-  btmgn.checkButtons();
-
-  if (btmgn.buttonStatus(keyRight) == ButtonStatus::PRESSED)
-  {
-    if (!limManager.isTransitioning())
-    {
-      dfmp3.playMp3FolderTrack(5);
-      limManager.AppTransition(TransitionDirection::TRANSITION_FORWARD);
-    }
-  }
-
-  if (btmgn.buttonStatus(keyLeft) == ButtonStatus::PRESSED)
-  {
-    if (!limManager.isTransitioning())
-    {
-      dfmp3.playMp3FolderTrack(5);
-      limManager.AppTransition(TransitionDirection::TRANSITION_BACKWARDS);
-    }
-  }
+  // Check for button presses
+  btnmgn.checkButtons(&appStack.top());
 
   // Update the LED matrix.
   matrix.clear();
-  limManager.Update();
+  // Update the app container at the top of the stack.
+  appStack.top().Update();
   matrix.show();
 }

@@ -18,6 +18,7 @@
 
 /**
  * @brief DateClock Application. Shows a clock with the current's month day.
+ * Time is updated via the time library that updates time via an NTP server.
  */
 class DateClock : public Application
 {

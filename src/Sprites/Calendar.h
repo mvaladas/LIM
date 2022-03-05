@@ -1,0 +1,41 @@
+#include <stdint.h>
+#include <avr/pgmspace.h>
+
+// Define Sprite structure
+#ifndef _H_SPRITESTRUCT
+#define _H_SPRITESTRUCT
+
+struct Sprite
+{
+    const uint16_t frameCount;
+    const uint16_t width;
+    const uint16_t height;
+    const uint32_t *frameduration;
+    const uint32_t *frames;
+};
+
+#endif
+
+
+/* Data exported for Calendar*/
+static const uint32_t PROGMEM calendar_frameduration[1] = {100};
+
+static const uint32_t PROGMEM calendar_data[1][80] = {
+{
+0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0x00000000,
+0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFF363636,
+0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF363636,
+0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF363636,
+0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF363636,
+0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF363636,
+0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF363636,
+0x00000000, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636, 0xFF363636
+}
+};
+const Sprite Calendar PROGMEM = {
+    1, // Frames
+    10, // Width
+    8, // Height
+    &(calendar_frameduration[0]), // Frames duration
+    &(calendar_data[0][0]) // Frames Data
+};

@@ -4,9 +4,9 @@
  * @brief definition of LimMatrix
  * @version 0.1
  * @date 19-08-212021
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "LimMatrix.h"
@@ -32,34 +32,13 @@ void LimMatrix::drawRGB24Bitmap(int16_t x, int16_t y, const uint32_t *bitmap,
         for (int16_t i = 0; i < w; i++)
         {
             uint32_t word = pgm_read_dword(&bitmap[j * w + i]);
-
-            this->drawPixel(x + i, y, Utils::RGBto565(word));
-            //this->drawPixel(x + i, y, word);
+            // Ignore transparent pixels
+            if ((word & 0xFF000000) != 0)
+            {
+                this->drawPixel(x + i, y, Utils::RGBto565(word));
+                // this->drawPixel(x + i, y, word);
+            }
         }
     }
     endWrite();
-}
-
-/**
- * @brief Draw an animated sprite. Frame animation calculated automatically based on millis()
- * 
- * @param progmem_data PROGMEM pointer to data
- * @param fps FPS of sprite animation
- * @param frame_count Frame count of sprite
- * @param offsetX X offset to display sprite
- * @param offsetY y offset to display sprite
- * @param width spirte width
- * @param height sprite height
- */
-void LimMatrix::drawSprite(const uint32_t *progmem_data, uint16_t fps, uint16_t frame_count,
-                           uint16_t offsetX, uint16_t offsetY, uint16_t width, uint16_t height)
-{
-    unsigned long currentMillis = millis();
-    uint16_t currentFrameIdx = (unsigned long)(currentMillis * fps / 1000.0) % frame_count;
-    if(currentFrameIdx >= frame_count)
-    {
-        Serial.printf("ERROR At millis: %lu\n", currentMillis);
-        Serial.printf("CurrentIdx = %i, and frame count is %i\n", currentFrameIdx, frame_count);
-    }
-    this->drawRGB24Bitmap(offsetX, offsetY, progmem_data + currentFrameIdx * width * height, width, height);
 }

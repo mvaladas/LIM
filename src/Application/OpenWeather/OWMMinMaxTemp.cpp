@@ -86,7 +86,8 @@ void OWMMinMaxTemp::draw()
     matrix->setCursor(this->offset_x + 6, 7 + this->offset_y);
     matrix->printf("%i", currentWeather->temp_max);
     // Draw a single pixel for the degree symbol
-    matrix->drawPixel(this->offset_x + (currentWeather->temp_max < 10 ? 10 : 14), this->offset_y + 2, matrix->Color(255, 255, 255));
+    int8_t pixelOffset = (currentWeather->temp_max >= 0 && currentWeather->temp_max < 10 ? 4 : 8);
+    matrix->drawPixel(this->offset_x + 6 + pixelOffset, this->offset_y + 2, matrix->Color(255, 255, 255));
 
     // matrix->drawSprite(&lowtemp_data[0][0], LOWTEMP_FPS, LOWTEMP_FRAME_COUNT,
     // 32-7-8 + this->offset_x, this->offset_y, LOWTEMP_FRAME_WIDTH, LOWTEMP_FRAME_HEIGHT);
@@ -94,5 +95,7 @@ void OWMMinMaxTemp::draw()
     matrix->setTextColor(matrix->Color(255, 255, 255));
     matrix->setCursor(this->offset_x + (32 - 9), 7 + this->offset_y);
     matrix->printf("%i", currentWeather->temp_min);
-    matrix->drawPixel(this->offset_x + 32 - (currentWeather->temp_min < 10 ? 5 : 1), this->offset_y + 2, matrix->Color(255, 255, 255));
+    // Draw a single pixel for the degree symbol
+    pixelOffset = (currentWeather->temp_min >= 0 && currentWeather->temp_min < 10 ? 4 : 8);
+    matrix->drawPixel(this->offset_x + (32 - 9) + pixelOffset, this->offset_y + 2, matrix->Color(255, 255, 255));
 }

@@ -15,6 +15,7 @@
 #include <time.h>
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
+#include "Sprites/Calendar.h"
 
 /**
  * @brief Destroy the Date Clock:: Date Clock object
@@ -27,11 +28,10 @@ DateClock::~DateClock()
 
 /**
  * @brief Initialize the application
- * 
  */
 void DateClock::doBegin()
 {
-
+  this->setSprite(&Calendar,0,0);
 }
 
 void DateClock::doUpdate()
@@ -63,8 +63,9 @@ void DateClock::drawCalendar()
   localtime_r(&now, &tm);
 
   // Draw calendar icon
-  matrix->fillRect(this->offset_x + 0, this->offset_y + 0, 9, 2, matrix->Color(255, 0, 0));
-  matrix->fillRect(this->offset_x + 0, this->offset_y + 2, 9, 6, matrix->Color(255, 255, 255));
+  // matrix->fillRect(this->offset_x + 0, this->offset_y + 0, 9, 2, matrix->Color(255, 0, 0));
+  // matrix->fillRect(this->offset_x + 0, this->offset_y + 2, 9, 6, matrix->Color(255, 255, 255));
+  drawSprite();
 
   auto daystr = String(tm.tm_mday);
 

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <string>
+#include "Application/Application.h"
 
 enum ButtonStatus
 {
@@ -33,13 +34,15 @@ class ButtonManager
 private:
   std::map<unsigned int, ButtonInfo> buttons;
 
+  int8_t updateButtonStatus(ButtonInfo &button, ButtonStatus currentStatus);
+
 public:
   ButtonManager(/* args */);
   ~ButtonManager();
 
-  void checkButtons();
+  void checkButtons(Application* app);
 
-  void addButton(unsigned int pin, bool invert);
+  void registerButton(unsigned int pin, bool invert);
   ButtonStatus buttonStatus(unsigned int pin);
 };
 
