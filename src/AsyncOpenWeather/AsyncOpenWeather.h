@@ -13,7 +13,7 @@
 #define _H_ASYNCOPENWEATHER
 
 #include <Arduino.h>
-#include <AsyncHTTPRequest_Generic.h>
+#include <AsyncHTTPRequest_Generic.hpp>
 
 /**
  * @brief Type of update response received

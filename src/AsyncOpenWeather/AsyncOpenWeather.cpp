@@ -9,7 +9,7 @@
  * 
  */
 #include "AsyncOpenWeather.h"
-#include <AsyncHTTPRequest_Generic.h>
+#include <AsyncHTTPRequest_Generic.hpp>
 #include <ArduinoJson.h>
 #include <math.h>
 

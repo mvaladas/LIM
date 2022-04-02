@@ -37,10 +37,7 @@
 #include <TZ.h>
 #include <DFMiniMp3.h>
 #include <SoftwareSerial.h>
-
-#include <BME280_t.h>
-#include "Adafruit_HTU21DF.h"
-#include <Adafruit_BMP280.h>
+#include <AsyncHTTPRequest_Generic.h>
 
 #include "Application/DateClock/DateClock.h"
 #include "Application/OpenWeather/OWMCurrentTemp.h"
@@ -76,11 +73,6 @@ LimMatrix matrix = LimMatrix(32, 8, LED_PIN,
 WiFiManager wifiManager;
 std::stack<AppContainer> appStack;
 ButtonManager btnmgn;
-
-// instantiate temp sensor
-BME280<> BMESensor;
-Adafruit_BMP280 BMPSensor; // use I2C interface
-Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 //DFPlayer
 // forward declare the notify class, just the name
@@ -148,7 +140,7 @@ void createApps()
   AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
-  AppContainer *owm = new AppContainer();
+  AppContainer* owm = new AppContainer();
   owm->AddApplication(owmTemp);
   owm->AddApplication(owmMinMax);
   owm->setCycleDuration(10000);

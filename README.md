@@ -36,8 +36,6 @@ To build and upload the project to an nodeMCU, use [Visual Studio Code](https://
 
 ## Fixing Linking Errors with AsyncHTTPRequest_Generic
 - See [Here](https://github.com/khoih-prog/AsyncHTTPRequest_Generic#howto-fix-multiple-definitions-linker-error)
-- mv src src_h
-- mv src_cpp src
 
 ## Constants.h
 If a Constants.h file is present, constants will be loaded from there, otherwise defaults will be loaded that might not work with some applications (e.g. API Keys constants.) See main.cpp.

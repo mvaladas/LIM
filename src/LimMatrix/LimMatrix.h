@@ -23,9 +23,9 @@
  *
  */
 #ifdef LIM_FASTLED
-class LimMatrix : public FastLED_NeoMatrix
+    class LimMatrix : public FastLED_NeoMatrix
 #elif LIM_NEOPIXELS
-class LimMatrix : public Adafruit_NeoMatrix
+    class LimMatrix : public Adafruit_NeoMatrix
 #endif
 {
 

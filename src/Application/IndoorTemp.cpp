@@ -10,7 +10,7 @@
  */
 
 #include "IndoorTemp.h"
-#include "Adafruit_HTU21DF.h"
+// #include "Adafruit_HTU21DF.h"
 #include "Fonts/TomThumbMod.h"
 //#include "Sprites/Temp.h"
 
