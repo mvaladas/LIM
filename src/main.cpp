@@ -4,9 +4,9 @@
  * @brief Main class that runs the SW loop of the ESP8266
  * @version 0.1
  * @date 18-08-212021
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 // Include Constants file if present, or load default values
@@ -47,11 +47,14 @@
 #include "AppContainer.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
 #include "TransitionEffect/VerticalEffect.h"
-#include "ButtonManager.h"
+#include "Service/ButtonManager.h"
+#include "Service/SoundManager.h"
 #include "Sprites/LIMLogo.h"
 
-#define DEBUG true
-#define Serial if(DEBUG)Serial
+#define DEBUG false
+#define Serial \
+  if (DEBUG)   \
+  Serial
 
 #ifdef LIM_FASTLED
 
@@ -74,61 +77,9 @@ WiFiManager wifiManager;
 std::stack<AppContainer> appStack;
 ButtonManager btnmgn;
 
-//DFPlayer
-// forward declare the notify class, just the name
-class Mp3Notify;
-SoftwareSerial mySoftwareSerial(D7, D5); // RX, TX
-typedef DFMiniMp3<SoftwareSerial, Mp3Notify> DfMp3;
-DfMp3 dfmp3(mySoftwareSerial);
-
-class Mp3Notify
-{
-public:
-  static void PrintlnSourceAction(DfMp3_PlaySources source, const char *action)
-  {
-    if (source & DfMp3_PlaySources_Sd)
-    {
-      Serial.print("SD Card, ");
-    }
-    if (source & DfMp3_PlaySources_Usb)
-    {
-      Serial.print("USB Disk, ");
-    }
-    if (source & DfMp3_PlaySources_Flash)
-    {
-      Serial.print("Flash, ");
-    }
-    Serial.println(action);
-  }
-  static void OnError(DfMp3 &mp3, uint16_t errorCode)
-  {
-    // see DfMp3_Error for code meaning
-    Serial.println();
-    Serial.print("Com Error ");
-    Serial.println(errorCode);
-  }
-  static void OnPlayFinished(DfMp3 &mp3, DfMp3_PlaySources source, uint16_t track)
-  {
-    Serial.print("Play finished for #");
-    Serial.println(track);
-  }
-  static void OnPlaySourceOnline(DfMp3 &mp3, DfMp3_PlaySources source)
-  {
-    PrintlnSourceAction(source, "online");
-  }
-  static void OnPlaySourceInserted(DfMp3 &mp3, DfMp3_PlaySources source)
-  {
-    PrintlnSourceAction(source, "inserted");
-  }
-  static void OnPlaySourceRemoved(DfMp3 &mp3, DfMp3_PlaySources source)
-  {
-    PrintlnSourceAction(source, "removed");
-  }
-};
-
 /**
  * @brief Create the Apps and load them in the Lim Manager.
- * 
+ *
  */
 void createApps()
 {
@@ -140,7 +91,7 @@ void createApps()
   AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
-  AppContainer* owm = new AppContainer();
+  AppContainer *owm = new AppContainer();
   owm->AddApplication(owmTemp);
   owm->AddApplication(owmMinMax);
   owm->setCycleDuration(10000);
@@ -162,43 +113,36 @@ void createApps()
 
 /**
  * @brief Base setup function. Runs once at HW initialization.
- * 
+ *
  */
 void setup()
 {
-  delay(2000);
-
   // Initialize Serial
   Serial.setDebugOutput(true);
-  //Serial.setRxBufferSize(1024);
-	Serial.begin(115200);
-  //Serial.begin(9600);
-  //Serial.println(EspClass::getSdkVersion());
+  // Serial.setRxBufferSize(1024);
+  Serial.begin(115200);
+  // Serial.begin(9600);
+  // Serial.println(EspClass::getSdkVersion());
   // Serial.end();
 
-  //Checking periphery
-  // Wire.begin(I2C_SDA, I2C_SCL);
-  // delay(1000);
-	// if (BMESensor.begin())
-	// {
-  //   Serial.println("BME");
-	// }
-	// else if (htu.begin())
-	// {
-	// 	Serial.println("HTU");
-	// }
-	// else if (BMPSensor.begin(BMP280_ADDRESS_ALT) || BMPSensor.begin(BMP280_ADDRESS))
-	// {
-	// 	Serial.println("BMP");
-	// } else 
-  // {
-  //   Serial.println("NONE!");
-  // }
-
-  // Init DFPlayer
-  dfmp3.begin();
-  dfmp3.setVolume(100);
-  //dfmp3.playMp3FolderTrack(1);
+  // Checking periphery
+  //  Wire.begin(I2C_SDA, I2C_SCL);
+  //  delay(1000);
+  //  if (BMESensor.begin())
+  //  {
+  //    Serial.println("BME");
+  //  }
+  //  else if (htu.begin())
+  //  {
+  //  	Serial.println("HTU");
+  //  }
+  //  else if (BMPSensor.begin(BMP280_ADDRESS_ALT) || BMPSensor.begin(BMP280_ADDRESS))
+  //  {
+  //  	Serial.println("BMP");
+  //  } else
+  //  {
+  //    Serial.println("NONE!");
+  //  }
 
   // Configure touch buttons input mode
   pinMode(keyLeft, INPUT_PULLUP);
@@ -217,10 +161,14 @@ void setup()
   matrix.clear();
 
   // Boot display
-  matrix.drawRGB24Bitmap(0,0, LIMLogo.frames, 32, 8);
+  matrix.drawRGB24Bitmap(0, 0, LIMLogo.frames, 32, 8);
   // TODO: better/prettier boot display.
-
   matrix.show();
+
+  // Init DFPlayer  
+  SoundManager::getInstance().Begin();
+  SoundManager::getInstance().setVolume(75);
+  SoundManager::getInstance().playMp3FolderTrack(1);
 
   // Start Wifi
   wifiManager.autoConnect("Clocky");
@@ -234,7 +182,7 @@ void setup()
 
 /**
  * @brief Main SW loop.
- * 
+ *
  */
 void loop()
 {

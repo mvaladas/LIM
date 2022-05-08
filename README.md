@@ -26,6 +26,14 @@ Displays the current day's maximum and minimum temperature. Information retrieve
 ## OpenWeather Current
 Displays the current weather state (via animated sprite) and the current temperature. Information retrieved via OpenWeatherMap.
 
+# DF3Mini and Track IDs.
+Track IDs in the DF3Mini have the following set values:
+|Track ID| Information|
+|--------|------------|
+|   1    | Startup Jingle|
+| 2 | Button Press Forward/Right|
+| 3 | Button Press Backward/Left| 
+
 # Inspiration
 This project was inspired by the following simular projects.
 - [AWTRIX](https://github.com/awtrix/AWTRIX2.0-Controller)

@@ -13,6 +13,7 @@
 #include "Application/Application.h"
 #include "TransitionEffect/TransitionEffect.h"
 #include "TransitionEffect/HorizontalEffect.h"
+#include "Service/SoundManager.h"
 
 /**
  * @brief Construct a new Lim Manager:: Lim Manager object
@@ -56,7 +57,7 @@ void AppContainer::Begin()
  */
 void AppContainer::Update()
 {
-    Serial.println("AppContainer: Update");
+    //Serial.println("AppContainer: Update");
     if (this->currentEffect->IsRunning())
     {
         this->currentEffect->Update();
@@ -198,12 +199,12 @@ void AppContainer::buttonEvent(uint8_t btnEvent)
         switch (btnEvent)
         {
         case BTN_LEFT_PRESS:
+            SoundManager::getInstance().playMp3FolderTrack(3);
             this->AppTransition(TransitionDirection::TRANSITION_BACKWARDS);
-            // dfmp3.playMp3FolderTrack(5);
             break;
         case BTN_RIGHT_PRESS:
+            SoundManager::getInstance().playMp3FolderTrack(2);
             this->AppTransition(TransitionDirection::TRANSITION_FORWARD);
-            // dfmp3.playMp3FolderTrack(5);
             break;
         default:
             break;

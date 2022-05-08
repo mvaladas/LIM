@@ -12,14 +12,26 @@
 #include "Application/Application.h"
 #include "Constants.h" // for the key PINS
 
-ButtonManager::ButtonManager(/* args */)
+/**
+ * @brief Construct a new Button Manager:: Button Manager object
+ * 
+ */
+ButtonManager::ButtonManager()
 {
 }
-
+/**
+ * @brief Destroy the Button Manager:: Button Manager object
+ * 
+ */
 ButtonManager::~ButtonManager()
 {
 }
 
+/**
+ * @brief Checks the button status and calls buttonEvent of the passed application
+ * 
+ * @param app The application to send button events to.
+ */
 void ButtonManager::checkButtons(Application *app)
 {
     for (auto &item : buttons)
@@ -30,8 +42,8 @@ void ButtonManager::checkButtons(Application *app)
             value = !value;
         }
 
-        ButtonStatus currentStatus = value == 0 ? NOT_PRESSED : PRESSED;
-        uint8_t appEvt = updateButtonStatus(item.second, currentStatus);
+        ButtonStatus newStatus = value == 0 ? NOT_PRESSED : PRESSED;
+        uint8_t appEvt = updateButtonStatus(item.second, newStatus);
         if (appEvt > 0)
         {
             app->buttonEvent(appEvt);
@@ -39,6 +51,12 @@ void ButtonManager::checkButtons(Application *app)
     }
 }
 
+/**
+ * @brief Add a button to the button manager
+ * 
+ * @param pin pin ID of the button
+ * @param invert true if the button is inverted
+ */
 void ButtonManager::registerButton(unsigned int pin, bool invert)
 {
     ButtonInfo info;
@@ -48,15 +66,30 @@ void ButtonManager::registerButton(unsigned int pin, bool invert)
     this->buttons.insert(std::pair<unsigned int, ButtonInfo>(pin, info));
 }
 
+/**
+ * @brief returns the status of the button
+ * 
+ * @param pin pin ID of the button
+ * @return the status of the button
+ */
 ButtonStatus ButtonManager::buttonStatus(unsigned int pin)
 {
     return buttons[pin].status;
 }
 
-int8_t ButtonManager::updateButtonStatus(ButtonInfo &button, ButtonStatus currentStatus)
+/**
+ * @brief Updates the button status.
+ * @details internal function to update the current button status.
+ * It's used to make sure long presses are detected
+ * 
+ * @param button The button to upated
+ * @param newStatus The new status of the button
+ * @return int8_t 
+ */
+int8_t ButtonManager::updateButtonStatus(ButtonInfo &button, ButtonStatus newStatus)
 {
     uint8_t appEvt = -1;
-    if (currentStatus == PRESSED && button.status == NOT_PRESSED)
+    if (newStatus == PRESSED && button.status == NOT_PRESSED)
     {
         switch (button.pin)
         {
@@ -73,7 +106,7 @@ int8_t ButtonManager::updateButtonStatus(ButtonInfo &button, ButtonStatus curren
             break;
         }
     }
-    else if (currentStatus == NOT_PRESSED && button.status == PRESSED)
+    else if (newStatus == NOT_PRESSED && button.status == PRESSED)
     {
         switch (button.pin)
         {
@@ -90,6 +123,6 @@ int8_t ButtonManager::updateButtonStatus(ButtonInfo &button, ButtonStatus curren
             break;
         }
     }
-    button.status = currentStatus;
+    button.status = newStatus;
     return appEvt;
 }

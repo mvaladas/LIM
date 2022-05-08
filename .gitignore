@@ -1,6 +1,7 @@
 #Ignore PIO and VSCODE Stuff
 .pio
 .vscode/
+.vim/
 
 #Ignore MAC OS Stuff
 .DS_Store
@@ -8,3 +9,4 @@
 
 #Ignore personal Constants file
 Constants.h
+.ccls
