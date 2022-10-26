@@ -20,9 +20,9 @@
 /* Configuration of NTP */
 #define MY_NTP_SERVER "europe.pool.ntp.org"
 
-#define keyLeft = D0;
-#define keyOk = D4;
-#define keyRight = D8;
+#define keyLeft D0
+#define keyOk D4
+#define keyRight D8
 #endif
 
 #include "Utils.h"
@@ -33,7 +33,6 @@
 #include <WiFiManager.h>
 #include <Arduino.h>
 #include <Wire.h>
-#include <time.h>
 #include <TZ.h>
 #include <DFMiniMp3.h>
 #include <SoftwareSerial.h>
@@ -51,15 +50,18 @@
 #include "Service/SoundManager.h"
 #include "Sprites/LIMLogo.h"
 
-#define DEBUG false
+#define I2C_SDA D3
+#define I2C_SCL D1
+
+#define DEBUG true
 #define Serial \
   if (DEBUG)   \
   Serial
 
 #ifdef LIM_FASTLED
 
-// #define FASTLED_INTERRUPT_RETRY_COUNT 1
-// #define FASTLED_ALLOW_INTERRUPTS 0
+//#define FASTLED_INTERRUPT_RETRY_COUNT 1
+//#define FASTLED_ALLOW_INTERRUPTS 0
 
 CRGB matrixleds[32 * 8];
 LimMatrix matrix = LimMatrix(matrixleds, 32, 8, 1, 1,
@@ -119,32 +121,14 @@ void setup()
 {
   // Initialize Serial
   Serial.setDebugOutput(true);
-  // Serial.setRxBufferSize(1024);
+  Serial.setRxBufferSize(1024);
   Serial.begin(115200);
   // Serial.begin(9600);
-  // Serial.println(EspClass::getSdkVersion());
+   //Serial.println(EspClass::getSdkVersion());
   // Serial.end();
 
-  // Checking periphery
-  //  Wire.begin(I2C_SDA, I2C_SCL);
-  //  delay(1000);
-  //  if (BMESensor.begin())
-  //  {
-  //    Serial.println("BME");
-  //  }
-  //  else if (htu.begin())
-  //  {
-  //  	Serial.println("HTU");
-  //  }
-  //  else if (BMPSensor.begin(BMP280_ADDRESS_ALT) || BMPSensor.begin(BMP280_ADDRESS))
-  //  {
-  //  	Serial.println("BMP");
-  //  } else
-  //  {
-  //    Serial.println("NONE!");
-  //  }
-
   // Configure touch buttons input mode
+  Wire.begin(I2C_SDA, I2C_SCL);
   pinMode(keyLeft, INPUT_PULLUP);
   pinMode(keyRight, INPUT_PULLUP);
   pinMode(keyOk, INPUT_PULLUP);
@@ -157,13 +141,14 @@ void setup()
 #endif
 
   matrix.begin();
-  matrix.setBrightness(255 * 0.30);
+  matrix.setBrightness(80); // Max 255
   matrix.clear();
+  matrix.show(); // Clearing the screen is needed to show the logo after.
 
   // Boot display
-  matrix.drawRGB24Bitmap(0, 0, LIMLogo.frames, 32, 8);
+ matrix.drawRGB24Bitmap(0, 0, LIMLogo.frames, 32, 8);
   // TODO: better/prettier boot display.
-  matrix.show();
+ matrix.show();
 
   // Init DFPlayer  
   SoundManager::getInstance().Begin();
@@ -172,9 +157,8 @@ void setup()
 
   // Start Wifi
   wifiManager.autoConnect("Clocky");
-
   // Config NTP Update parameters for the time library
-  configTime(TZ_Europe_Berlin, MY_NTP_SERVER);
+  configTime(TZ_Europe_Berlin, MY_NTP_SERVER1, MY_NTP_SERVER2, MY_NTP_SERVER3);
 
   // Initialize LIM
   createApps();

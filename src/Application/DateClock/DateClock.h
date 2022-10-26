@@ -13,7 +13,6 @@
 #define _H_DATECLOCK
 
 #include <stdint.h>
-#include <time.h>
 #include "Application/Application.h"
 
 /**

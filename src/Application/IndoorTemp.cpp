@@ -10,9 +10,8 @@
  */
 
 #include "IndoorTemp.h"
-// #include "Adafruit_HTU21DF.h"
 #include "Fonts/TomThumbMod.h"
-//#include "Sprites/Temp.h"
+#include "ClosedCube_HDC1080.h"
 
 /**
  * @brief Construct a new Indoor Temp Object
@@ -21,6 +20,7 @@
  */
 IndoorTemp::IndoorTemp(LimMatrix *matrix) : Application(matrix)
 {
+    //this->updateInterval = 10000; // 10 sec update
 }
 
 /**
@@ -29,6 +29,12 @@ IndoorTemp::IndoorTemp(LimMatrix *matrix) : Application(matrix)
  */
 void IndoorTemp::doUpdate()
 {
+    this->temperature = hdc1080.readTemperature();
+    this->humidity = hdc1080.readHumidity();
+      Serial.print("T= ");
+  Serial.println(hdc1080.readTemperature());
+  Serial.print("H= ");
+  Serial.println(hdc1080.readHumidity());
 }
 
 /**
@@ -37,6 +43,7 @@ void IndoorTemp::doUpdate()
  */
 void IndoorTemp::doBegin()
 {
+    hdc1080.begin(0x40);
     // Update once at startup.
     this->doUpdate();
 }
@@ -63,8 +70,7 @@ void IndoorTemp::draw()
     matrix->setTextColor(matrix->Color(255, 255, 255));
     int16_t x, y;
     uint16_t w, h;
-    // Serial.println(htu.readTemperature());
-    String str("htu.readTemperature()");
+    String str(this->temperature);
     matrix->getTextBounds(str, this->offset_x + 10, this->offset_y + 7, &x, &y, &w, &h);
     //TODO: investigate why getTextBounds is returning one more character in bounds.
     // That's why we subtract 4 to the width.

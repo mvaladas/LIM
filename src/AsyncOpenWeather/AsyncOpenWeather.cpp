@@ -22,13 +22,16 @@
  */
 void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState)
 {
+    Serial.println("readyStateChangeCB - Start");
     AsyncOpenWeather *asyncObj = (AsyncOpenWeather *)optParm;
 
+Serial.println("readyStateChangeCB - 1");
     // TODO recalculate this
     const size_t capacity = 2 * JSON_ARRAY_SIZE(1) + JSON_ARRAY_SIZE(2) + 6 * JSON_OBJECT_SIZE(1) + 3 * JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(4) + JSON_OBJECT_SIZE(5) + 5 * JSON_OBJECT_SIZE(8) + 570;
 
     if (readyState == readyStateDone)
     {
+        Serial.println("readyStateChangeCB - 2");
         String response = request->responseText();
         // Serial.println("\n**************************************");
         // Serial.println(response);
@@ -37,6 +40,7 @@ void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState
         // request->setDebug(false);
         DynamicJsonDocument doc(capacity);
         DeserializationError err = deserializeJson(doc, response);
+        Serial.println("readyStateChangeCB - 3");
         if (err == DeserializationError::Ok)
         {
             if (asyncObj->getCurrentUpdate() == OWM_CURRENT)
@@ -60,6 +64,7 @@ void readyStateChangeCB(void *optParm, AsyncHTTPRequest *request, int readyState
             }
         }
     }
+    Serial.println("readyStateChangeCB - End");
 }
 
 /**
@@ -84,6 +89,7 @@ void AsyncOpenWeather::Update()
     unsigned long currentMillis = millis();
     if (lastUpdateTime == 0 || currentMillis - lastUpdateTime > updateInterval)
     {
+        Serial.println("Update - 1");
         if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
         {
             String fullUrl = String("http://api.openweathermap.org/" + url).c_str();
@@ -111,6 +117,7 @@ void AsyncOpenWeather::Update()
 
 void AsyncOpenWeather::UpdateForeCast()
 {
+    Serial.println("UpdateForeCast - Start");
     static bool requestOpenResult;
     unsigned long currentMillis = millis();
         if (request.readyState() == readyStateUnsent || request.readyState() == readyStateDone)
@@ -136,6 +143,7 @@ void AsyncOpenWeather::UpdateForeCast()
             Serial.println("Can't send request");
         }
         lastUpdateTime = currentMillis;
+        Serial.println("UpdateForeCast - END");
 }
 
 /**

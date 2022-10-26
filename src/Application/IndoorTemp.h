@@ -14,7 +14,7 @@
 
 #include "Application/Application.h"
 #include "LimMatrix/LimMatrix.h"
-// #include "Adafruit_HTU21DF.h"
+#include "ClosedCube_HDC1080.h"
 
 /**
  * @brief Open Weather Map Application.
@@ -25,7 +25,10 @@ class IndoorTemp: public Application
 
 private:   
     
-    // Adafruit_HTU21DF* htu;
+    ClosedCube_HDC1080 hdc1080;
+
+    float temperature;
+    float humidity;
 
     virtual void doUpdate();
     virtual void doBegin();

@@ -12,7 +12,6 @@
 #include "DateClock.h"
 #include "Application/Application.h"
 #include "utils.h"
-#include <time.h>
 #include <Fonts/Tiny3x3a2pt7b.h>
 #include "Fonts/TomThumbMod.h"
 #include "Sprites/Calendar.h"
@@ -59,7 +58,7 @@ void DateClock::drawCalendar()
   uint16_t w, h;
   time_t now;
   tm tm;
-  time(&now);
+  now = time(nullptr);
   localtime_r(&now, &tm);
 
   // Draw calendar icon
@@ -84,7 +83,7 @@ void DateClock::drawClock()
 {
   time_t now;
   tm tm;
-  time(&now);
+  now = time(nullptr);
   localtime_r(&now, &tm);
 
   unsigned long hours = tm.tm_hour;
