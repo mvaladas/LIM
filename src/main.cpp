@@ -30,38 +30,38 @@
 #include <stack>
 
 #include "LimMatrix/LimMatrix.h"
-#include <WiFiManager.h>
 #include <Arduino.h>
-#include <Wire.h>
-#include <TZ.h>
+#include <AsyncHTTPRequest_Generic.h>
 #include <DFMiniMp3.h>
 #include <SoftwareSerial.h>
-#include <AsyncHTTPRequest_Generic.h>
+#include <TZ.h>
+#include <WiFiManager.h>
+#include <Wire.h>
 
+#include "AppContainer.h"
 #include "Application/DateClock/DateClock.h"
+#include "Application/IndoorTemp.h"
+#include "Application/Matrix/MatrixApp.h"
 #include "Application/OpenWeather/OWMCurrentTemp.h"
 #include "Application/OpenWeather/OWMMinMaxTemp.h"
-#include "Application/Matrix/MatrixApp.h"
-#include "Application/IndoorTemp.h"
-#include "AppContainer.h"
 #include "AsyncOpenWeather/AsyncOpenWeather.h"
-#include "TransitionEffect/VerticalEffect.h"
 #include "Service/ButtonManager.h"
 #include "Service/SoundManager.h"
 #include "Sprites/LIMLogo.h"
+#include "TransitionEffect/VerticalEffect.h"
 
 #define I2C_SDA D3
 #define I2C_SCL D1
 
 #define DEBUG true
-#define Serial \
-  if (DEBUG)   \
+#define Serial                                                                 \
+  if (DEBUG)                                                                   \
   Serial
 
 #ifdef LIM_FASTLED
 
-//#define FASTLED_INTERRUPT_RETRY_COUNT 1
-//#define FASTLED_ALLOW_INTERRUPTS 0
+// #define FASTLED_INTERRUPT_RETRY_COUNT 1
+// #define FASTLED_ALLOW_INTERRUPTS 0
 
 CRGB matrixleds[32 * 8];
 LimMatrix matrix = LimMatrix(matrixleds, 32, 8, 1, 1,
@@ -83,14 +83,14 @@ ButtonManager btnmgn;
  * @brief Create the Apps and load them in the Lim Manager.
  *
  */
-void createApps()
-{
+void createApps() {
   Serial.println("Create Apps");
   // These never get deleted because there is no shutdown in the microprocessor.
   DateClock *clock = new DateClock(&matrix);
   // IndoorTemp *temp = new IndoorTemp(&matrix);
 
-  AsyncOpenWeather *asyncOWM = new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
+  AsyncOpenWeather *asyncOWM =
+      new AsyncOpenWeather(OWM_APIKEY, "Darmstadt, DE");
   OWMCurrentTemp *owmTemp = new OWMCurrentTemp(asyncOWM, &matrix);
   OWMMinMaxTemp *owmMinMax = new OWMMinMaxTemp(asyncOWM, &matrix);
   AppContainer *owm = new AppContainer();
@@ -117,14 +117,13 @@ void createApps()
  * @brief Base setup function. Runs once at HW initialization.
  *
  */
-void setup()
-{
+void setup() {
   // Initialize Serial
   Serial.setDebugOutput(true);
   Serial.setRxBufferSize(1024);
   Serial.begin(115200);
   // Serial.begin(9600);
-   //Serial.println(EspClass::getSdkVersion());
+  // Serial.println(EspClass::getSdkVersion());
   // Serial.end();
 
   // Configure touch buttons input mode
@@ -135,7 +134,7 @@ void setup()
   btnmgn.registerButton(keyLeft, false);
   btnmgn.registerButton(keyRight, false);
 
-// Initialize Matrix
+  // Initialize Matrix
 #ifdef LIM_FASTLED
   FastLED.addLeds<NEOPIXEL, LED_PIN>(matrixleds, 32 * 8);
 #endif
@@ -146,11 +145,11 @@ void setup()
   matrix.show(); // Clearing the screen is needed to show the logo after.
 
   // Boot display
- matrix.drawRGB24Bitmap(0, 0, LIMLogo.frames, 32, 8);
+  matrix.drawRGB24Bitmap(0, 0, LIMLogo.frames, 32, 8);
   // TODO: better/prettier boot display.
- matrix.show();
+  matrix.show();
 
-  // Init DFPlayer  
+  // Init DFPlayer
   SoundManager::getInstance().Begin();
   SoundManager::getInstance().setVolume(75);
   SoundManager::getInstance().playMp3FolderTrack(1);
@@ -168,8 +167,7 @@ void setup()
  * @brief Main SW loop.
  *
  */
-void loop()
-{
+void loop() {
   // Check for button presses
   btnmgn.checkButtons(&appStack.top());
 
